@@ -10,8 +10,10 @@ import { HeroBlock } from "./media/HeroBlock";
 import { Divider } from "./design/Divider";
 import { ImageTextBlock } from "./design/ImageText";
 import { AccordionBlock } from "./design/Accordian";
-import { SiteHeader } from "./design/SiteHeader";
+import { SiteHeader } from "./design/SiteHeader/SiteHeader";
 import { PricingCard } from "./design/PricingCard";
+import { TestimonialCard } from "./design/TestimonialCard";
+import { Footer } from "./design/Footer";
 
 export const components = {
     HeadingBlock,
@@ -23,9 +25,11 @@ export const components = {
     RichTextBlock,
     Card,
     PricingCard,
+    TestimonialCard,
     HeroBlock,
     Divider,
     ImageTextBlock,
     AccordionBlock,
-    SiteHeader
+    SiteHeader,
+    Footer
 }

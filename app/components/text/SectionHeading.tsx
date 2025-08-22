@@ -9,27 +9,27 @@ export type SectionHeadingBlockProps = {
 const headingStyles = {
     Heading1: {
         tag: "h1" as const,
-        className: "text-6xl md:text-5xl font-bold text-gray-900 tracking-tight",
+        className: "text-6xl md:text-5xl font-bold text-gray-900 tracking-tight mb-2",
     },
     Heading2: {
         tag: "h2" as const,
-        className: "text-5xl md:text-4xl font-bold text-gray-800 tracking-tight",
+        className: "text-5xl md:text-4xl font-bold text-gray-800 tracking-tight mb-2",
     },
     Heading3: {
         tag: "h3" as const,
-        className: "text-4xl md:text-3xl font-bold text-gray-800",
+        className: "text-4xl md:text-3xl font-bold text-gray-800 mb-2",
     },
     Heading4: {
         tag: "h4" as const,
-        className: "text-3xl md:text-2xl font-bold text-gray-700",
+        className: "text-3xl md:text-2xl font-bold text-gray-700 mb-2",
     },
     Heading5: {
         tag: "h5" as const,
-        className: "text-2xl md:text-xl font-bold text-gray-700",
+        className: "text-2xl md:text-xl font-bold text-gray-700 mb-2",
     },
     Heading6: {
         tag: "h6" as const,
-        className: "text-xl md:text-lg font-bold text-gray-600",
+        className: "text-xl md:text-lg font-bold text-gray-600 mb-2",
     },
 };
 
@@ -58,9 +58,9 @@ export const SectionHeadingBlock: ComponentConfig<SectionHeadingBlockProps> = {
     render: ({ title, headingLevel, subtitle }) => {
         const { tag: Tag, className } = headingStyles[headingLevel] || headingStyles.Heading2;
         return (
-            <div className="py-16 px-4 text-center bg-gray-50">
+            <div className="py-20 px-6 text-center bg-white">
                 <Tag className={className}>{title}</Tag>
-                <p className="mt-4 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+                 <p className="text-gray-600 mb-12 max-w-2xl mx-auto text-xl">
                     {subtitle}
                 </p>
             </div>

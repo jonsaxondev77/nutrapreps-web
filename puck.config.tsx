@@ -9,7 +9,7 @@ export const config: Config<any> = {
     },
     design: {
       title: "Design",
-      components: ["AccordionBlock", "Card", "Divider","ImageTextBlock", "PricingCard", "SiteHeader"]
+      components: ["AccordionBlock", "Card", "Divider","ImageTextBlock", "PricingCard", "TestimonialCard", "SiteHeader", "Footer"]
     },
     text: {
       title: "Text",

@@ -19,7 +19,7 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
             options: [
                 { label: "Left", value: "left" },
                 { label: "Center", value: "center" },
-                { label: "Right", value: "right"}
+                { label: "Right", value: "right" }
             ]
         }
     },
@@ -30,6 +30,23 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
         align: "left",
     },
     render: ({ title, subtitle, backgroundImageUrl, align }) => {
+
+        function getBackgroundImage(srcOrSrcSet = '') {
+            if (!srcOrSrcSet.includes(' ')) {
+                return `url("${srcOrSrcSet}")`;
+            }
+
+            const imageSet = srcOrSrcSet
+                .split(', ')
+                .map((str) => {
+                    const [url, dpi] = str.split(' ');
+                    return `url("${url}") ${dpi}`;
+                })
+                .join(', ');
+
+            return `image-set(${imageSet})`;
+        }
+
         const containerAlignClasses = {
             left: "items-start",
             center: "items-center",
@@ -41,15 +58,24 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
             center: "text-center",
             right: "text-right",
         };
+
+        const backgroundImage = getBackgroundImage(backgroundImageUrl);
+
         return (
+           <>
             <div
-                className="relative w-full h-[60vh] min-h-[400px] bg-cover bg-center text-white"
-                style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+                className="relative w-full h-[70vh] min-h-[400px] text-white"
             >
-                <div className="absolute inset-0 bg-black bg-opacity-50" />
+                <div
+                    className="absolute inset-0 bg-cover bg-center z-0"
+                    style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+                />
+            
+               
+
                 <div
                     className={classNames(
-                        "relative z-10 h-full flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+                        "relative z-20 h-full flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
                         containerAlignClasses[align] || containerAlignClasses.left
                     )}
                 >
@@ -69,6 +95,7 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
                     </div>
                 </div>
             </div>
+        </>
         );
     }
 }

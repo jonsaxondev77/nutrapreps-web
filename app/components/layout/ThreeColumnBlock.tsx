@@ -16,15 +16,11 @@ export const ThreeColumnBlock: ComponentConfig<ThreeColumnBlockProps> = {
   },
   render: ({ column1: Column1, column2: Column2, column3: Column3 }) => {
     return (
-      <div className="flex">
-        <div className="w-full md:w-1/3 p-5 min-h-[100px]">
-          <Column1 />
-        </div>
-        <div className="w-full md:w-1/3 p-5 min-h-[100px]">
-          <Column2 />
-        </div>
-        <div className="w-full md:w-1/3 p-5 min-h-[100px]">
-          <Column3 />
+      <div className="container mx-auto px-6">
+        <div className="grid md:grid-cols-3 gap-12">
+          <div className="min-h-[100px]"><Column1 /></div>
+          <div className="min-h-[100px]"><Column2 /></div>
+          <div className="min-h-[100px]"><Column3 /></div>
         </div>
       </div>
     );
