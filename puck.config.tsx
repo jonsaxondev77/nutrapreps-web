@@ -5,7 +5,19 @@ export const config: Config<any> = {
   categories: {
     layout: {
       title: "Layout",
-      components: ["HeadingBlock", "OneColumnBlock", "TwoColumnBlock", "ThreeColumnBlock", "FourColumnBlock"]
+      components: ["OneColumnBlock", "TwoColumnBlock", "ThreeColumnBlock", "FourColumnBlock"]
+    },
+    design: {
+      title: "Design",
+      components: ["AccordionBlock", "Card", "Divider","ImageTextBlock", "PricingCard", "SiteHeader"]
+    },
+    text: {
+      title: "Text",
+      components: ["HeadingBlock", "SectionHeadingBlock", "RichTextBlock"]
+    },
+    media: {
+      title: "Media",
+      components: ["HeroBlock"]
     }
   },
   components: components

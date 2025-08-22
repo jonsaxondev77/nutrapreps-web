@@ -23,8 +23,10 @@ export async function generateMetadata({
   const { puckPath = [] } = await params;
   const path = `/${puckPath.join("/")}`;
 
+  const pageData = await getPage(path);
+
   return {
-    title: getPage(path)?.root.props?.title,
+    title: pageData?.root?.props?.title || `Page Not Found: ${path}`, // Provide a fallback title
   };
 }
 
@@ -35,7 +37,7 @@ export default async function Page({
 }) {
   const { puckPath = [] } = await params;
   const path = `/${puckPath.join("/")}`;
-  const data = getPage(path);
+  const data = await getPage(path);
 
   if (!data) {
     return notFound();

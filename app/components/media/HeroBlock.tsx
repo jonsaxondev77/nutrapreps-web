@@ -1,0 +1,74 @@
+import { richTextField } from "@/lib/fields/RichTextField";
+import { ComponentConfig } from "@measured/puck"
+import classNames from "classnames";
+
+export type HeroBlockProps = {
+    title: string;
+    subtitle: string;
+    backgroundImageUrl: string;
+    align: "left" | "center" | "right";
+}
+
+export const HeroBlock: ComponentConfig<HeroBlockProps> = {
+    fields: {
+        title: { type: "text" },
+        subtitle: richTextField("Subtitle"),
+        backgroundImageUrl: { type: "text" },
+        align: {
+            type: "radio",
+            options: [
+                { label: "Left", value: "left" },
+                { label: "Center", value: "center" },
+                { label: "Right", value: "right"}
+            ]
+        }
+    },
+    defaultProps: {
+        title: "Healthy Meals, Delivered.",
+        subtitle: "Stop stressing about what to eat. We deliver fresh, delicious, and healthy meals right to your doorstep. Ready in minutes.",
+        backgroundImageUrl: "https://placehold.co/1920x1080/cccccc/666666?text=Hero+Background",
+        align: "left",
+    },
+    render: ({ title, subtitle, backgroundImageUrl, align }) => {
+        const containerAlignClasses = {
+            left: "items-start",
+            center: "items-center",
+            right: "items-end",
+        };
+
+        const textAlignClasses = {
+            left: "text-left",
+            center: "text-center",
+            right: "text-right",
+        };
+        return (
+            <div
+                className="relative w-full h-[60vh] min-h-[400px] bg-cover bg-center text-white"
+                style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+            >
+                <div className="absolute inset-0 bg-black bg-opacity-50" />
+                <div
+                    className={classNames(
+                        "relative z-10 h-full flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+                        containerAlignClasses[align] || containerAlignClasses.left
+                    )}
+                >
+                    <div
+                        className={classNames(
+                            "max-w-2xl",
+                            textAlignClasses[align] || textAlignClasses.left
+                        )}
+                    >
+                        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+                            {title}
+                        </h1>
+                        <div
+                            className="mt-6 text-xl prose prose-invert max-w-none"
+                            dangerouslySetInnerHTML={{ __html: subtitle }}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

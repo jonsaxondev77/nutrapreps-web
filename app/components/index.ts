@@ -1,13 +1,31 @@
+import { HeadingBlock } from "./text/HeadingBlock";
 import { FourColumnBlock } from "./layout/FourColumnBlock";
-import { HeadingBlock } from "./layout/HeadingBlock";
 import { OneColumnBlock } from "./layout/OneColumnBlock";
 import { ThreeColumnBlock } from "./layout/ThreeColumnBlock";
 import { TwoColumnBlock } from "./layout/TwoColumnBlock";
+import { SectionHeadingBlock } from "./text/SectionHeading";
+import { Card } from "./design/Card";
+import { RichTextBlock } from "./text/RichTextBlock";
+import { HeroBlock } from "./media/HeroBlock";
+import { Divider } from "./design/Divider";
+import { ImageTextBlock } from "./design/ImageText";
+import { AccordionBlock } from "./design/Accordian";
+import { SiteHeader } from "./design/SiteHeader";
+import { PricingCard } from "./design/PricingCard";
 
 export const components = {
     HeadingBlock,
+    SectionHeadingBlock,
     OneColumnBlock,
     TwoColumnBlock,
     ThreeColumnBlock,
-    FourColumnBlock
+    FourColumnBlock,
+    RichTextBlock,
+    Card,
+    PricingCard,
+    HeroBlock,
+    Divider,
+    ImageTextBlock,
+    AccordionBlock,
+    SiteHeader
 }
