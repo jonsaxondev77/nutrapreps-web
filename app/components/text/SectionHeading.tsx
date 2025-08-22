@@ -3,7 +3,8 @@ import { ComponentConfig } from "@measured/puck";
 export type SectionHeadingBlockProps = {
     title: string;
     headingLevel?: string;
-    subtitle: string;
+    subtitle?: string; // Subtitle is now optional
+    id: string;
 };
 
 const headingStyles = {
@@ -48,21 +49,26 @@ export const SectionHeadingBlock: ComponentConfig<SectionHeadingBlockProps> = {
                 { label: "Heading 6", value: "Heading6" }
             ]
         },
-        subtitle: { label: "Section subheading", type: "text" }
+        subtitle: { label: "Section subheading", type: "text" },
+        id: { type: "text" },
     },
     defaultProps: {
         title: "A clear and bold heading",
         headingLevel: "Heading1",
-        subtitle: "A more subdued subheading"
+        subtitle: "A more subdued subheading",
+        id: "",
     },
-    render: ({ title, headingLevel, subtitle }) => {
+    render: ({ id, title, headingLevel, subtitle }) => {
         const { tag: Tag, className } = headingStyles[headingLevel] || headingStyles.Heading2;
         return (
-            <div className="py-20 px-6 text-center bg-white">
+            <div id={id} className="py-16 px-6 text-center">
                 <Tag className={className}>{title}</Tag>
-                 <p className="text-gray-600 mb-12 max-w-2xl mx-auto text-xl">
-                    {subtitle}
-                </p>
+                {/* Only render the subtitle if it has a value */}
+                {subtitle && (
+                    <p className="text-gray-600 mb-12 max-w-2xl mx-auto text-xl">
+                        {subtitle}
+                    </p>
+                )}
             </div>
         )
     }

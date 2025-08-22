@@ -14,6 +14,7 @@ import { SiteHeader } from "./design/SiteHeader/SiteHeader";
 import { PricingCard } from "./design/PricingCard";
 import { TestimonialCard } from "./design/TestimonialCard";
 import { Footer } from "./design/Footer";
+import { Button } from "./design/Button";
 
 export const components = {
     HeadingBlock,
@@ -30,6 +31,7 @@ export const components = {
     Divider,
     ImageTextBlock,
     AccordionBlock,
+    Button,
     SiteHeader,
     Footer
 }
