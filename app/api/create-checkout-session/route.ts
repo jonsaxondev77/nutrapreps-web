@@ -2,20 +2,24 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { CartItem } from '@/lib/store/cartSlice';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {});
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is not set in the environment variables.');
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {});
 
 export async function POST(request: Request) {
   try {
-    const { cartItems } = await request.json();
+    const { cartItems, orderId } = await request.json();
 
-    if (!cartItems || cartItems.length === 0) {
-      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
+    if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+      return NextResponse.json({ error: 'Cart is empty or invalid.' }, { status: 400 });
     }
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
     cartItems.forEach((item: CartItem) => {
-      if (item.plan) {
+      if (item.plan && typeof item.plan.price === 'number') {
         line_items.push({
           price_data: {
             currency: 'gbp',
@@ -29,16 +33,13 @@ export async function POST(request: Request) {
         });
       }
 
-      const allAddons = [...item.addons.sunday, ...item.addons.wednesday];
+      const allAddons = [...(item.addons.sunday || []), ...(item.addons.wednesday || [])];
       allAddons.forEach(addon => {
-        if (addon.quantity > 0) {
+        if (addon.quantity > 0 && addon.item && typeof addon.item.price === 'number') {
           line_items.push({
             price_data: {
               currency: 'gbp',
-              product_data: {
-                name: addon.item.name,
-                description: 'Add-on',
-              },
+              product_data: { name: addon.item.name, description: 'Add-on' },
               unit_amount: Math.round(addon.item.price * 100),
             },
             quantity: addon.quantity,
@@ -46,15 +47,12 @@ export async function POST(request: Request) {
         }
       });
       
-      item.desserts.forEach(dessert => {
-         if (dessert.quantity > 0) {
+      (item.desserts || []).forEach(dessert => {
+         if (dessert.quantity > 0 && dessert.item && typeof dessert.item.price === 'number') {
           line_items.push({
             price_data: {
               currency: 'gbp',
-              product_data: {
-                name: dessert.item.name,
-                description: 'Dessert',
-              },
+              product_data: { name: dessert.item.name, description: 'Dessert' },
               unit_amount: Math.round(dessert.item.price * 100),
             },
             quantity: dessert.quantity,
@@ -64,13 +62,7 @@ export async function POST(request: Request) {
     });
     
      line_items.push({
-        price_data: {
-            currency: 'gbp',
-            product_data: {
-                name: 'Shipping',
-            },
-            unit_amount: 500, // £5.00
-        },
+        price_data: { currency: 'gbp', product_data: { name: 'Shipping' }, unit_amount: 500 },
         quantity: 1,
     });
 
@@ -81,15 +73,19 @@ export async function POST(request: Request) {
       mode: 'payment',
       success_url: `${request.headers.get('origin')}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.headers.get('origin')}/checkout`,
+      metadata: {
+          order_id: orderId,
+      }
     });
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
 
   } catch (error) {
+    let errorMessage = 'An unknown error occurred.';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
     console.error('Error creating checkout session:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Internal Server Error: ${errorMessage}` }, { status: 500 });
   }
 }

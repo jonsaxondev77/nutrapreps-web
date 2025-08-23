@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Package, DeliveryDay, MealOption, OrderItem } from '@/types/ordering';
+import { Plan, DeliveryDay, MealOption, OrderItem } from '@/types/ordering';
 
 // Define the shape for items that have a quantity
-export interface QuantifiedOrderItem {
+interface QuantifiedOrderItem {
     item: OrderItem;
     quantity: number;
 }
 
 interface OrderState {
-  plan: Package | null;
+  plan: Plan | null;
   deliveryDays: DeliveryDay | null;
   meals: {
     sunday: (MealOption | null)[];
@@ -59,7 +59,7 @@ const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    setPlan(state, action: PayloadAction<Package>) {
+    setPlan(state, action: PayloadAction<Plan>) {
       state.plan = action.payload;
       initializeMeals(state);
     },

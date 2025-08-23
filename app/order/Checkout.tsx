@@ -8,12 +8,14 @@ import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { removeItem } from '@/lib/store/cartSlice';
 import { resetOrder } from '@/lib/store/orderSlice';
 import { Lock, ArrowRight, Trash2 } from 'lucide-react';
+import { usePlaceOrderMutation } from '@/lib/store/services/orderingApi';
 
 export default function Checkout() {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.cartItems);
     const router = useRouter();
     const [processing, setProcessing] = useState(false);
+    const [placeOrder] = usePlaceOrderMutation();
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
     const shippingCost = 5.00; // Example shipping cost
@@ -21,22 +23,28 @@ export default function Checkout() {
 
     const handleCheckout = async () => {
         setProcessing(true);
-        toast.loading('Redirecting to payment...');
+        toast.loading('Preparing your order...');
 
         try {
+
+            console.log(cartItems);
+
+            const orderResponse = await placeOrder(cartItems).unwrap();
+            const orderId = orderResponse.orderId;
+
             const response = await fetch('/api/create-checkout-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cartItems }),
+                body: JSON.stringify({ cartItems, orderId }),
             });
 
-            const { url } = await response.json();
+            const data = await response.json();
 
-            if (url) {
-                router.push(url);
+            if (response.ok && data.url) {
+                router.push(data.url);
             } else {
                 toast.dismiss();
-                toast.error('Could not initiate payment. Please try again.');
+                toast.error(data.error || 'Could not initiate payment. Please try again.');
             }
         } catch (error) {
             toast.dismiss();
