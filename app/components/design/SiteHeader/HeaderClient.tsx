@@ -5,9 +5,22 @@ import { Menu, X } from "lucide-react";
 import { SiteHeaderProps } from "./SiteHeader";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export const HeaderClient = ({ logoUrl, links }: SiteHeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
+  const pathname = usePathname();
+
+  const formatUrl = (url: string) => {
+    // If it's an anchor link and we are not on the homepage, prefix with "/"
+    if (url.startsWith('#') && pathname !== '/') {
+      return `/${url}`;
+    }
+    return url;
+  };
+
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -22,7 +35,7 @@ export const HeaderClient = ({ logoUrl, links }: SiteHeaderProps) => {
           {links.map((link, i) => (
             <a
               key={i}
-              href={link.url}
+              href={formatUrl(link.url)}
               className="text-gray-600 hover:text-green-600 transition duration-300"
             >
               {link.label}
@@ -32,9 +45,21 @@ export const HeaderClient = ({ logoUrl, links }: SiteHeaderProps) => {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <a href="/puck" className="text-gray-600 hover:text-green-600 transition duration-300">
-            Login
-          </a>
+          {session ? (
+            <button
+              onClick={() => signOut()}
+              className="text-gray-600 hover:text-green-600 transition duration-300"
+            >
+              Logout
+            </button>
+          ) : (
+            <a
+              href="/signin"
+              className="text-gray-600 hover:text-green-600 transition duration-300"
+            >
+              Login
+            </a>
+          )}
           <a href="#" className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition duration-300">
             Get Started
           </a>
@@ -50,14 +75,26 @@ export const HeaderClient = ({ logoUrl, links }: SiteHeaderProps) => {
       {isOpen && (
         <div className="md:hidden px-6 pb-4 space-y-2">
           {links.map((link, i) => (
-             <a key={i} href={link.url} className="block text-gray-600 hover:text-green-600">
+             <a key={i} href={formatUrl(link.url)} className="block text-gray-600 hover:text-green-600">
                 {link.label}
              </a>
           ))}
           <hr className="my-2" />
-          <a href="/puck" className="block text-gray-600 hover:text-green-600">
-            Login
-          </a>
+          {session ? (
+            <button
+              onClick={() => signOut()}
+              className="block text-gray-600 hover:text-green-600"
+            >
+              Logout
+            </button>
+          ) : (
+            <a
+              href="/signin"
+              className="block text-gray-600 hover:text-green-600"
+            >
+              Login
+            </a>
+          )}
           <a href="#" className="block bg-green-600 text-white text-center px-4 py-2 rounded-full hover:bg-green-700">
             Get Started
           </a>
