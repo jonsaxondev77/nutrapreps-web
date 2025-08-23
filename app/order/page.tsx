@@ -1,21 +1,29 @@
 'use client';
 
-import { useOrder } from "@/context/OrderContext";
 import { useEffect, useState } from "react";
-import { PlanAndDelivery } from "./PlanAndDelivery";
+import { PlanAndDelivery } from "./Plan-Delivery";
 import { MealSelection } from "./MealSelection";
 import { ItemSelection } from "./ItemSelection";
 import { ReviewAndConfirm } from "./ReviewAndConfirm";
-import { useCart } from "@/context/CartContext";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { resetOrder } from "@/lib/store/orderSlice";
+import { clearCart } from "@/lib/store/cartSlice";
 
-export default function Order() {
+export default function OrderPage() {
     const [step, setStep] = useState(1);
-    const { setOrder, resetOrder } = useOrder();
-    const { clearLastCompletedOrder } = useCart();
+    const dispatch = useAppDispatch();
+
+    // When the order page loads, reset any previous order state
+    useEffect(() => {
+        dispatch(resetOrder());
+    }, [dispatch]);
 
     const nextStep = () => setStep(prev => prev + 1);
     const prevStep = () => setStep(prev => prev - 1);
+    
+    // When a user starts a new box, reset the order state
     const restart = () => {
+        dispatch(resetOrder());
         setStep(1);
     };
 
@@ -25,6 +33,7 @@ export default function Order() {
                 return <PlanAndDelivery onNext={nextStep} />;
             case 2:
                 return <MealSelection onNext={nextStep} onBack={prevStep} />;
+            
             case 3:
                 return (
                     <ItemSelection
@@ -43,8 +52,10 @@ export default function Order() {
                         onBack={prevStep}
                     />
                 );
+            
             case 5:
                 return <ReviewAndConfirm onEdit={prevStep} onRestart={restart} />;
+            
             default:
                 return <PlanAndDelivery onNext={nextStep} />;
         }

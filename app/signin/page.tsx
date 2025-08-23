@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
-import { useRegisterMutation } from "@/lib/store/authApi";
+import { useRegisterMutation } from "@/lib/store/services/authApi";
 
 
 export default function SignIn() {
