@@ -57,11 +57,13 @@ export interface OrderedMeal {
 }
 
 export interface QuantifiedAddon {
+    id: number;
     item: OrderItem;
     quantity: number;
 }
 
 export interface QuantifiedExtra {
+    id: number;
     item: OrderItem;
     quantity: number;
 }

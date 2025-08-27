@@ -20,10 +20,12 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
         return <p className="text-center p-8">Your box configuration is empty. Please go back and select a plan.</p>;
     }
 
-    const addonsTotal = order.addons.sunday.reduce((total, addon) => total + addon.price * addon.quantity, 0)
-                      + order.addons.wednesday.reduce((total, addon) => total + addon.price * addon.quantity, 0);
+    const addonsTotal = [...order.addons.sunday, ...order.addons.wednesday]
+        .reduce((total, addon) => total + addon.item.price * addon.quantity, 0);
 
-    const dessertsTotal = order.desserts.reduce((total, dessert) => total + dessert.price * dessert.quantity, 0);
+    const dessertsTotal = order.desserts
+        .reduce((total, dessert) => total + dessert.item.price * dessert.quantity, 0);
+        
     const grandTotal = order.plan.price + addonsTotal + dessertsTotal;
 
     const handleAddToCart = () => {
@@ -93,7 +95,7 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                             <h3 className="font-bold text-xl">Selected Meals ({allMeals.length})</h3>
                         </div>
                         <ul className="list-disc list-inside space-y-1 text-gray-700 pl-9">
-                            {allMeals.map((option, i) => <li key={i}>{option.meal.name}</li>)}
+                            {allMeals.map((option, i) => <li key={i}>{option!.meal.name}</li>)}
                         </ul>
                     </div>
 
@@ -110,7 +112,7 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                                         <p className="font-semibold text-gray-800">Sunday:</p>
                                         <ul className="list-disc list-inside space-y-1 text-gray-700 pl-4">
                                             {order.addons.sunday.map(addon => (
-                                                <li key={addon.id}>{addon.quantity}x {addon.name}</li>
+                                                <li key={addon.item.id}>{addon.quantity}x {addon.item.name}</li>
                                             ))}
                                         </ul>
                                     </div>
@@ -120,7 +122,7 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                                         <p className="font-semibold text-gray-800">Wednesday:</p>
                                         <ul className="list-disc list-inside space-y-1 text-gray-700 pl-4">
                                             {order.addons.wednesday.map(addon => (
-                                                <li key={addon.id}>{addon.quantity}x {addon.name}</li>
+                                                <li key={addon.item.id}>{addon.quantity}x {addon.item.name}</li>
                                             ))}
                                         </ul>
                                     </div>
@@ -138,7 +140,7 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                             </div>
                             <ul className="list-disc list-inside space-y-1 text-gray-700 pl-9">
                                 {order.desserts.map(dessert => (
-                                    <li key={dessert.id}>{dessert.quantity}x {dessert.name}</li>
+                                    <li key={dessert.item.id}>{dessert.quantity}x {dessert.item.name}</li>
                                 ))}
                             </ul>
                         </div>

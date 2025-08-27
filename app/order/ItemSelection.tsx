@@ -52,8 +52,9 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {items.map(item => {
-                const sundayQuantity = order.addons.sunday.find(ci => ci.id === item.id)?.quantity || 0;
-                const wednesdayQuantity = order.addons.wednesday.find(ci => ci.id === item.id)?.quantity || 0;
+                // Correctly find the quantity by looking inside the 'item' property
+                const sundayQuantity = order.addons.sunday.find(ci => ci.item.id === item.id)?.quantity || 0;
+                const wednesdayQuantity = order.addons.wednesday.find(ci => ci.item.id === item.id)?.quantity || 0;
                 return (
                     <div key={item.id} className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm flex flex-col">
                         <div className="flex items-start gap-3 mb-4">
@@ -112,7 +113,8 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {items.map(item => {
-                const currentQuantity = order.desserts.find(ci => ci.id === item.id)?.quantity || 0;
+                // Correctly find the quantity by looking inside the 'item' property
+                const currentQuantity = order.desserts.find(ci => ci.item.id === item.id)?.quantity || 0;
                 return (
                     <div key={item.id} className="flex justify-between items-center p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
                         <div className="flex items-center gap-3">
