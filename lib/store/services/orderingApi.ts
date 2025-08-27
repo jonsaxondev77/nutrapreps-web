@@ -53,11 +53,11 @@ export const orderingApi = createApi({
             };
           }),
           Extras: cartItems.flatMap(item => item.desserts).reduce((acc, dessert) => {
-              const existing = acc.find(d => d.extraId === dessert.item.id);
+              const existing = acc.find(d => d.extraId === dessert.item.id.toString());
               if (existing) {
                   existing.quantity += dessert.quantity;
               } else {
-                  acc.push({ extraId: dessert.item.id, quantity: dessert.quantity });
+                  acc.push({ extraId: dessert.item.id.toString(), quantity: dessert.quantity });
               }
               return acc;
           }, [] as { extraId: string; quantity: number }[]),

@@ -14,7 +14,7 @@ export const TestimonialCard: ComponentConfig<TestimonialCardProps> = {
   },
   defaultProps: {
     quote:
-      "This service has been a game-changer for me. I'm eating healthier than ever and I've saved so much time on cooking and cleaning. The food is always delicious!",
+      "This service has been a game-changer for me. I&apos;m eating healthier than ever and I&apos;ve saved so much time on cooking and cleaning. The food is always delicious!",
     authorName: "Sarah J.",
     authorTitle: "Marketing Manager",
   },
@@ -22,7 +22,7 @@ export const TestimonialCard: ComponentConfig<TestimonialCardProps> = {
     return (
       <div className="bg-white p-8 rounded-lg shadow-lg h-full flex flex-col">
         <div className="flex-grow">
-          <p className="text-gray-600 mb-6 italic">"{quote}"</p>
+          <p className="text-gray-600 mb-6 italic">&quot;{quote}&quot;</p>
         </div>
         <div>
           <p className="font-semibold text-gray-800">{authorName}</p>

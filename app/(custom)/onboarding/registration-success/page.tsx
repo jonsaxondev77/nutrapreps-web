@@ -20,7 +20,7 @@ const RegistrationSuccessPage: React.FC = () => {
                     Just one more step to get started.
                 </p>
                 <p className="mt-2 text-md text-gray-700">
-                    We've sent a verification link to your email address. Please check your inbox (and spam folder, just in case) and click the link to activate your account.
+                   We&apos;ve sent a verification link to your email address. Please check your inbox (and spam folder, just in case) and click the link to activate your account.
                 </p>
                 
                 <div className="mt-8">

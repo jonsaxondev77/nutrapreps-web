@@ -1,17 +1,14 @@
 'use client';
 
-import { useOrder } from "@/context/OrderContext";
 import { useEffect, useState } from "react";
-import { PlanAndDelivery } from "./PlanAndDelivery";
-import { MealSelection } from "../(custom)/order/MealSelection";
-import { ItemSelection } from "../(custom)/order/ItemSelection";
+
 import { ReviewAndConfirm } from "./ReviewAndConfirm";
-import { useCart } from "@/context/CartContext";
+import { PlanAndDelivery } from "./Plan-Delivery";
+import { MealSelection } from "./MealSelection";
+import { ItemSelection } from "./ItemSelection";
 
 export default function Order() {
     const [step, setStep] = useState(1);
-    const { setOrder, resetOrder } = useOrder();
-    const { clearLastCompletedOrder } = useCart();
 
     /*
     useEffect(() => {

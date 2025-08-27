@@ -4,7 +4,7 @@ import { DeliveryDay, Package } from '@/types/ordering';
 import { setPlan, setDeliveryDays } from '@/lib/store/orderSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { useGetPackagesQuery } from '@/lib/store/services/packagesApi';
-import { Calendar, Users, Zap, Leaf } from 'lucide-react';
+import { Calendar, Users, Zap, Leaf, PackageIcon } from 'lucide-react';
 
 // --- Helper Data for Plan Cards ---
 // In a real app, this might come from the API as well
@@ -49,7 +49,7 @@ export const PlanAndDelivery = ({ onNext }: Props) => {
 
       <div className="p-8 bg-white shadow-lg rounded-2xl animate-fade-in">
         <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-800">Let's Build Your Perfect Box</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Let&apos;s Build Your Perfect Box</h1>
             <p className="text-gray-500 mt-2">Start by picking a plan that fits your lifestyle.</p>
         </div>
 

@@ -3,6 +3,7 @@ import { OrderState } from './orderSlice';
 
 export interface CartItem extends OrderState {
   id: string;
+  plan: any;
   totalPrice: number;
 }
 

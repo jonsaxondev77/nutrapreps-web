@@ -14,4 +14,5 @@ export interface AuthResponse {
   refreshToken?: string;
   expiresIn: number;
   role: string;
+  message: string;
 }

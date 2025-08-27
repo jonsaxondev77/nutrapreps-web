@@ -27,8 +27,6 @@ export default function Checkout() {
 
         try {
 
-            console.log(cartItems);
-
             const orderResponse = await placeOrder(cartItems).unwrap();
             const orderId = orderResponse.orderId;
 

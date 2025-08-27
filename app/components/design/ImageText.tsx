@@ -1,6 +1,7 @@
 import { richTextField } from "@/lib/fields/RichTextField";
 import { ComponentConfig } from "@measured/puck"
 import classNames from "classnames";
+import Image from "next/image";
 
 export type ImageTextBlockProps = {
     imageUrl: string;
@@ -32,10 +33,11 @@ export const ImageTextBlock: ComponentConfig<ImageTextBlockProps> = {
     render: ({ imageUrl, title, content, imagePosition }) => {
         const image = (
             <div className="w-full md:w-1/2">
-                <img
+                <Image
                     src={imageUrl}
                     alt={title}
-                    className="w-full h-full object-cover rounded-lg"
+                    fill
+                    className="object-cover rounded-lg"
                 />
             </div>
         );

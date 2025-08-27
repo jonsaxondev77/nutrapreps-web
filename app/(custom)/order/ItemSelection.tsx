@@ -103,7 +103,7 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
                 <div>
                     <h3 className="text-lg font-semibold text-yellow-800">Desserts Available for Wednesday Delivery Only</h3>
                     <p className="text-yellow-700 mt-1">
-                        To add desserts, please go back and select either 'Wednesday' or 'Both' for your delivery days.
+                       To add desserts, please go back and select either Wednesday or Both for your delivery days.
                     </p>
                 </div>
             </div>
