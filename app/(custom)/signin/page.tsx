@@ -22,18 +22,7 @@ export default function SignIn() {
   // Handle successful registration
   useEffect(() => {
     if (isSuccess) {
-      // Automatically sign in the user after successful registration
-      signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      }).then((result) => {
-        if (result?.ok) {
-          router.push("/");
-        } else {
-          setError("Registration successful, but automatic sign-in failed.");
-        }
-      });
+      router.push("/onboarding/registration-success");
     }
     if (registerError) {
       if ('data' in registerError && registerError.data) {

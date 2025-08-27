@@ -37,6 +37,26 @@ export const authOptions: NextAuthOptions = {
             return null;
         }
       }
+    }),
+    CredentialsProvider({
+        id: "email-verification",
+        name: "EmailVerification",
+        credentials: {
+            userData: { label: "User Data", type: "text" }
+        },
+        async authorize(credentials) {
+            if (credentials?.userData) {
+                try {
+                    // The user data is passed directly from the client after successful verification
+                    const user = JSON.parse(credentials.userData);
+                    return user;
+                } catch (e) {
+                    console.error("Failed to parse user data for email verification sign in:", e);
+                    return null;
+                }
+            }
+            return null;
+        }
     })
   ],
   cookies: {

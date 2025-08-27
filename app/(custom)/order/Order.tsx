@@ -3,8 +3,8 @@
 import { useOrder } from "@/context/OrderContext";
 import { useEffect, useState } from "react";
 import { PlanAndDelivery } from "./PlanAndDelivery";
-import { MealSelection } from "./MealSelection";
-import { ItemSelection } from "./ItemSelection";
+import { MealSelection } from "../(custom)/order/MealSelection";
+import { ItemSelection } from "../(custom)/order/ItemSelection";
 import { ReviewAndConfirm } from "./ReviewAndConfirm";
 import { useCart } from "@/context/CartContext";
 
