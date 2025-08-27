@@ -24,8 +24,10 @@ export const RichTextBlock: ComponentConfig<RichTextProps> = {
     },
     render: ({ content }) => {
         return (
-            <div className="py-8 px-4 sm:px-6 lg:px-8">
-                <div className="prose lg:prose-xl" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="container mx-auto px-6">
+                <div className="py-8 px-4 sm:px-6 lg:px-8">
+                    <div className="prose lg:prose-7xl max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
+                </div>
             </div>
         )
     }
