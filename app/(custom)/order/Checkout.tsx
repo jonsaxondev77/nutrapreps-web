@@ -9,6 +9,7 @@ import { removeItem } from '@/lib/store/cartSlice';
 import { resetOrder } from '@/lib/store/orderSlice';
 import { Lock, ArrowRight, Trash2 } from 'lucide-react';
 import { usePlaceOrderMutation } from '@/lib/store/services/orderingApi';
+import { useGetShippingDetailsQuery } from '@/lib/store/services/authApi';
 
 export default function Checkout() {
     const dispatch = useAppDispatch();
@@ -16,11 +17,12 @@ export default function Checkout() {
     const router = useRouter();
     const [processing, setProcessing] = useState(false);
     const [placeOrder] = usePlaceOrderMutation();
+    const { data: shippingData, isLoading: isLoadingShipping } = useGetShippingDetailsQuery();
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
-    const shippingCost = 5.00; // Example shipping cost
+    const shippingCost = shippingData?.deliveryFee ?? 0;
     const total = subtotal + shippingCost;
-
+    
     const handleCheckout = async () => {
         setProcessing(true);
         toast.loading('Preparing your order...');

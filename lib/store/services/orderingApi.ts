@@ -34,6 +34,9 @@ export const orderingApi = createApi({
     getExtras: builder.query<Extra[], void>({
       query: () => 'order/extras'
     }),
+    getStripeCustomerId: builder.query<{ stripeCustomerId: string }, void>({
+        query: () => 'accounts/stripe-customer',
+    }),
     placeOrder: builder.mutation<{ orderId: number }, CartItem[]>({
       query: (cartItems) => {
         // --- Data Transformation Logic ---
@@ -93,4 +96,11 @@ export const orderingApi = createApi({
 });
 
 // Export hooks for usage in components
-export const { useGetMealsQuery, useGetAddonsQuery, useGetExtrasQuery, useGetOrderBySessionIdQuery, usePlaceOrderMutation } = orderingApi;
+export const { 
+  useGetMealsQuery,
+  useGetAddonsQuery,
+  useGetExtrasQuery,
+  useGetStripeCustomerIdQuery,
+  useGetOrderBySessionIdQuery,
+  usePlaceOrderMutation
+} = orderingApi;
