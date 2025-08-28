@@ -20,7 +20,8 @@ export default function Checkout() {
     const { data: shippingData, isLoading: isLoadingShipping } = useGetShippingDetailsQuery();
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
-    const shippingCost = shippingData?.deliveryFee ?? 0;
+    const shippingCost = shippingData?.cost ?? 0;
+    
     const total = subtotal + shippingCost;
     
     const handleCheckout = async () => {
