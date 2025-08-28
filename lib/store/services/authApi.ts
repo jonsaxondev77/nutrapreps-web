@@ -1,4 +1,5 @@
 import { AuthResponse, RegisterRequest } from '@/types/accounts';
+import { ShippingDetails } from '@/types/ordering';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getSession } from 'next-auth/react';
 

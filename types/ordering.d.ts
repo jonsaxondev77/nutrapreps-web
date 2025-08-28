@@ -96,3 +96,8 @@ export interface SimpleOrder {
     totalPrice: number;
     customerName: string;
 }
+
+export interface ShippingDetails {
+    cost: number;
+    stripeShippingRateId: string;
+}
