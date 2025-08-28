@@ -46,9 +46,9 @@ export async function POST(request: Request) {
           });
         }
       });
-      
+
       (item.desserts || []).forEach(dessert => {
-         if (dessert.quantity > 0 && dessert.item && typeof dessert.item.price === 'number') {
+        if (dessert.quantity > 0 && dessert.item && typeof dessert.item.price === 'number') {
           line_items.push({
             price_data: {
               currency: 'gbp',
@@ -60,10 +60,10 @@ export async function POST(request: Request) {
         }
       });
     });
-    
-     line_items.push({
-        price_data: { currency: 'gbp', product_data: { name: 'Shipping' }, unit_amount: 500 },
-        quantity: 1,
+
+    line_items.push({
+      price_data: { currency: 'gbp', product_data: { name: 'Shipping' }, unit_amount: 500 },
+      quantity: 1,
     });
 
 
@@ -74,8 +74,9 @@ export async function POST(request: Request) {
       success_url: `${request.headers.get('origin')}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.headers.get('origin')}/checkout`,
       metadata: {
-          order_id: orderId,
-      }
+        order_id: orderId,
+      },
+      allow_promotion_codes: true
     });
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
   } catch (error) {
     let errorMessage = 'An unknown error occurred.';
     if (error instanceof Error) {
-        errorMessage = error.message;
+      errorMessage = error.message;
     }
     console.error('Error creating checkout session:', error);
     return NextResponse.json({ error: `Internal Server Error: ${errorMessage}` }, { status: 500 });
