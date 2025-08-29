@@ -1,4 +1,4 @@
-import { AuthResponse, RegisterRequest, UpdateUserProfileRequest, UserProfile } from '@/types/accounts';
+import { AuthResponse, ChangePasswordRequest, ForgotPasswordRequest, RegisterRequest, ResetPasswordRequest, UpdateUserProfileRequest, UserProfile } from '@/types/accounts';
 import { ShippingDetails } from '@/types/ordering';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getSession } from 'next-auth/react';
@@ -64,22 +64,53 @@ export const authApi = createApi({
       }),
     }),
     getShippingDetails: builder.query<ShippingDetails, void>({
-        query: () => 'accounts/shipping-details',
+      query: () => 'accounts/shipping-details',
     }),
     getUserProfile: builder.query<UserProfile, void>({
       query: () => 'profile',
       providesTags: ['UserProfile']
     }),
     updateUserProfile: builder.mutation<void, Partial<UpdateUserProfileRequest>>({
-        query: (profileData) => ({
-            url: 'profile',
-            method: 'PUT',
-            body: profileData,
-        }),
-        invalidatesTags: ['UserProfile'],
+      query: (profileData) => ({
+        url: 'profile',
+        method: 'PUT',
+        body: profileData,
+      }),
+      invalidatesTags: ['UserProfile'],
+    }),
+    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
+      query: (credentials) => ({
+        url: 'forgot-password',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
+      query: (credentials) => ({
+        url: 'reset-password',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    changePassword: builder.mutation<{ message: string }, ChangePasswordRequest>({
+      query: (credentials) => ({
+        url: 'change-password',
+        method: 'PUT',
+        body: credentials,
+      }),
     }),
   }),
 });
 
 // Export the auto-generated hook for the 'register' mutation
-export const { useRegisterMutation, useConfirmEmailMutation, useCompleteProfileMutation, useGetShippingDetailsQuery, useGetUserProfileQuery, useUpdateUserProfileMutation } = authApi;
+export const {
+  useRegisterMutation,
+  useConfirmEmailMutation,
+  useCompleteProfileMutation,
+  useGetShippingDetailsQuery,
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useChangePasswordMutation
+} = authApi;

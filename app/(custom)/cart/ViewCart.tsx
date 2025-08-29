@@ -32,7 +32,7 @@ export default function ViewCart() {
                 <div className="p-8 bg-white shadow-lg rounded-2xl text-center animate-fade-in">
                     <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h1 className="text-3xl font-bold text-gray-800">Your Cart is Empty</h1>
-                    <p className="text-gray-500 mt-2 mb-8">Looks like you haven't added any meal boxes yet.</p>
+                    <p className="text-gray-500 mt-2 mb-8">Looks like you haven&apos;t added any meal boxes yet.</p>
                     <button
                         onClick={handleContinueShopping}
                         className="px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors shadow-sm"

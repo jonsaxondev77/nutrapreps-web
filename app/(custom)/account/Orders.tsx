@@ -24,7 +24,7 @@ const Orders = () => {
             <div className="text-center">
                 <ShoppingCart className="w-12 h-12 mx-auto text-gray-300 mb-4" />
                 <h2 className="text-2xl font-bold mb-2">No Orders Yet</h2>
-                <p className="text-gray-500 mb-6">You haven't placed any orders with us. When you do, they'll appear here.</p>
+                <p className="text-gray-500 mb-6">You haven&apos;t placed any orders with us. When you do, they&apos;ll appear here.</p>
                 <Link href="/order" className="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors">
                     Start Your First Order
                 </Link>

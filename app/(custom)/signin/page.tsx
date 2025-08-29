@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import Link from "next/link"; // Import the Link component
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useRegisterMutation } from "@/lib/store/services/authApi";
 
@@ -127,6 +128,16 @@ export default function SignIn() {
                 className="pl-12 w-full py-3 bg-gray-100 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
               />
             </div>
+            
+            {/* Add the "Forgot Password?" link here */}
+            {!isRegistering && (
+                <div className="text-right">
+                    <Link href="/forgot-password">
+                        <span className="text-sm font-semibold text-orange-500 hover:underline">Forgot Password?</span>
+                    </Link>
+                </div>
+            )}
+
 
             <button
               type="submit"
