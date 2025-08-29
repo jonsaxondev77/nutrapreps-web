@@ -45,6 +45,11 @@ export interface OrderItem {
     id: number;
     name: string;
     price: number;
+    calories?: string;
+    protein?: string;
+    carbs?: string;
+    fat?: string;
+    allergens?: string
 }
 
 
