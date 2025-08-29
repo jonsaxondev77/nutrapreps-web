@@ -1,4 +1,4 @@
-import { AuthResponse, RegisterRequest } from '@/types/accounts';
+import { AuthResponse, RegisterRequest, UpdateUserProfileRequest, UserProfile } from '@/types/accounts';
 import { ShippingDetails } from '@/types/ordering';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getSession } from 'next-auth/react';
@@ -30,6 +30,7 @@ export const authApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ['UserProfile'],
   endpoints: (builder) => ({
     // This mutation is for unauthenticated users, so it won't have a token to send.
     register: builder.mutation<AuthResponse, RegisterRequest>({
@@ -65,8 +66,20 @@ export const authApi = createApi({
     getShippingDetails: builder.query<ShippingDetails, void>({
         query: () => 'accounts/shipping-details',
     }),
+    getUserProfile: builder.query<UserProfile, void>({
+      query: () => 'profile',
+      providesTags: ['UserProfile']
+    }),
+    updateUserProfile: builder.mutation<void, Partial<UpdateUserProfileRequest>>({
+        query: (profileData) => ({
+            url: 'profile',
+            method: 'PUT',
+            body: profileData,
+        }),
+        invalidatesTags: ['UserProfile'],
+    }),
   }),
 });
 
 // Export the auto-generated hook for the 'register' mutation
-export const { useRegisterMutation, useConfirmEmailMutation, useCompleteProfileMutation, useGetShippingDetailsQuery } = authApi;
+export const { useRegisterMutation, useConfirmEmailMutation, useCompleteProfileMutation, useGetShippingDetailsQuery, useGetUserProfileQuery, useUpdateUserProfileMutation } = authApi;

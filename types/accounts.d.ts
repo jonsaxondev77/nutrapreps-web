@@ -16,3 +16,18 @@ export interface AuthResponse {
   role: string;
   message: string;
 }
+
+export interface UserProfile {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    postCode: string;
+    allergies: string;
+    safePlaceDeliveryInstructions: string;
+}
+
+export type UpdateUserProfileRequest = Partial<UserProfile>;

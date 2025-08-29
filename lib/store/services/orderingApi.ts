@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Extra, MealOption, Order, SimpleOrder } from '@/types/ordering';
+import type { Extra, MealOption, Order, OrderHistoryItem, SimpleOrder } from '@/types/ordering';
 import { getSession } from 'next-auth/react';
 import { CartItem } from '../cartSlice';
+import { PagedResponse } from '@/types/shared';
 
 const getNextSunday = () => {
   const date = new Date();
@@ -92,6 +93,9 @@ export const orderingApi = createApi({
             }
         },
     }),
+    getOrderHistory: builder.query<PagedResponse<OrderHistoryItem>, { pageNumber: number; pageSize: number }>({
+        query: ({ pageNumber, pageSize }) => `order/history?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    })
   }),
 });
 
@@ -102,5 +106,6 @@ export const {
   useGetExtrasQuery,
   useGetStripeCustomerIdQuery,
   useGetOrderBySessionIdQuery,
-  usePlaceOrderMutation
+  usePlaceOrderMutation,
+  useGetOrderHistoryQuery
 } = orderingApi;

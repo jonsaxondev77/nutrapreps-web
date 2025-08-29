@@ -7,7 +7,7 @@ export interface CartItem extends OrderState {
   totalPrice: number;
 }
 
-interface CartState {
+export interface CartState {
   cartItems: CartItem[];
   lastCompletedOrder: CartItem[] | null;
 }

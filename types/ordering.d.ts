@@ -45,11 +45,6 @@ export interface OrderItem {
     id: number;
     name: string;
     price: number;
-    calories?: string;
-    protein?: string;
-    carbs?: string;
-    fat?: string;
-    allergens?: string
 }
 
 
@@ -100,6 +95,13 @@ export interface SimpleOrder {
     id: number;
     totalPrice: number;
     customerName: string;
+}
+
+export interface OrderHistoryItem {
+    id: number;
+    orderDate: string;
+    totalPrice: number;
+    hasPayment: boolean;
 }
 
 export interface ShippingDetails {

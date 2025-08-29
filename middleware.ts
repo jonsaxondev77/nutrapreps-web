@@ -5,14 +5,17 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
+  const protectedPaths = ['/order', '/checkout', '/account'];
 
-  if (req.nextUrl.pathname.startsWith('/order')) {
+  if (protectedPaths.some(path => req.nextUrl.pathname.startsWith(path))) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // Redirect to signin if user is not logged in or not active
+    // Redirect to signin if user is not logged in
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = '/signin';
+      // Add a callbackUrl so the user is redirected back to the page they were trying to access
+      url.searchParams.set('callbackUrl', req.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
   }
