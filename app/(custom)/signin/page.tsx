@@ -4,7 +4,7 @@ import { Suspense } from "react";
 export default function SignInPage() {
   return (
     <Suspense>
-      <SignIn />
+      <SignIn/>
     </Suspense>
   );
 }
