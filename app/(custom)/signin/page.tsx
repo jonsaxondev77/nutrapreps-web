@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link"; // Import the Link component
+import Link from "next/link";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useRegisterMutation } from "@/lib/store/services/authApi";
 
@@ -16,6 +16,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Use the RTK Query mutation hook
   const [register, { isLoading: isRegisteringUser, error: registerError, isSuccess }] = useRegisterMutation();
@@ -44,7 +45,8 @@ export default function SignIn() {
       password,
     });
     if (result?.ok) {
-      router.push("/");
+      const callbackUrl = searchParams.get('callbackUrl');
+      router.push(callbackUrl || "/");
     } else {
       setError("Failed to sign in. Please check your credentials.");
     }

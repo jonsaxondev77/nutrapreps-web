@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { Extra, MealOption, Order, OrderHistoryItem, SimpleOrder } from '@/types/ordering';
-import { getSession } from 'next-auth/react';
 import { CartItem } from '../cartSlice';
 import { PagedResponse } from '@/types/shared';
+import { baseQuery, baseQueryWithRedirect } from './baseQuery';
+
 
 const getNextSunday = () => {
   const date = new Date();
@@ -15,16 +16,14 @@ const getNextSunday = () => {
 
 export const orderingApi = createApi({
   reducerPath: 'mealApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-    prepareHeaders: async (headers) => {
-      const session = await getSession();
-      if (session?.user.jwtToken) {
-        headers.set("Authorization", `Bearer ${session.user.jwtToken}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: (args, api, extraOptions) => {
+    const { endpoint } = api;
+    const publicEndpoints = ['getMeals', 'getAddons', 'getExtras'];
+    if (publicEndpoints.includes(endpoint)) {
+      return baseQuery(args, api, extraOptions);
+    }
+    return baseQueryWithRedirect(args, api, extraOptions);
+  },
   endpoints: (builder) => ({
     getMeals: builder.query<MealOption[], void>({
       query: () => 'order/meals',
@@ -36,7 +35,7 @@ export const orderingApi = createApi({
       query: () => 'order/extras'
     }),
     getStripeCustomerId: builder.query<{ stripeCustomerId: string }, void>({
-        query: () => 'accounts/stripe-customer',
+      query: () => 'accounts/stripe-customer',
     }),
     placeOrder: builder.mutation<{ orderId: number }, CartItem[]>({
       query: (cartItems) => {
@@ -46,7 +45,7 @@ export const orderingApi = createApi({
           OrderItems: cartItems.map(item => {
             const sundayMeals = item.meals.sunday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Sunday', quantity: 1 }));
             const wednesdayMeals = item.meals.wednesday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Wednesday', quantity: 1 }));
-            
+
             const sundayAddons = item.addons.sunday.map(addon => ({ mealOptionId: addon.item.id, day: 'Sunday', quantity: addon.quantity }));
             const wednesdayAddons = item.addons.wednesday.map(addon => ({ mealOptionId: addon.item.id, day: 'Wednesday', quantity: addon.quantity }));
 
@@ -57,13 +56,13 @@ export const orderingApi = createApi({
             };
           }),
           Extras: cartItems.flatMap(item => item.desserts).reduce((acc, dessert) => {
-              const existing = acc.find(d => d.extraId === dessert.item.id.toString());
-              if (existing) {
-                  existing.quantity += dessert.quantity;
-              } else {
-                  acc.push({ extraId: dessert.item.id.toString(), quantity: dessert.quantity });
-              }
-              return acc;
+            const existing = acc.find(d => d.extraId === dessert.item.id.toString());
+            if (existing) {
+              existing.quantity += dessert.quantity;
+            } else {
+              acc.push({ extraId: dessert.item.id.toString(), quantity: dessert.quantity });
+            }
+            return acc;
           }, [] as { extraId: string; quantity: number }[]),
         };
 
@@ -75,32 +74,32 @@ export const orderingApi = createApi({
       },
     }),
     getOrderBySessionId: builder.query<SimpleOrder, string>({
-        queryFn: async (sessionId, _queryApi, _extraOptions, _fetchWithBQ) => {
-            try {
-                const response = await fetch('/api/get-order-by-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sessionId }),
-                });
-                if (!response.ok) {
-                    const error = await response.json();
-                    return { error: { status: response.status, data: error } };
-                }
-                const data = await response.json();
-                return { data };
-            } catch (error) {
-                return { error: { status: 'FETCH_ERROR', error: (error as Error).message } };
-            }
-        },
+      queryFn: async (sessionId, _queryApi, _extraOptions, _fetchWithBQ) => {
+        try {
+          const response = await fetch('/api/get-order-by-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId }),
+          });
+          if (!response.ok) {
+            const error = await response.json();
+            return { error: { status: response.status, data: error } };
+          }
+          const data = await response.json();
+          return { data };
+        } catch (error) {
+          return { error: { status: 'FETCH_ERROR', error: (error as Error).message } };
+        }
+      },
     }),
     getOrderHistory: builder.query<PagedResponse<OrderHistoryItem>, { pageNumber: number; pageSize: number }>({
-        query: ({ pageNumber, pageSize }) => `order/history?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+      query: ({ pageNumber, pageSize }) => `order/history?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     })
   }),
 });
 
 // Export hooks for usage in components
-export const { 
+export const {
   useGetMealsQuery,
   useGetAddonsQuery,
   useGetExtrasQuery,

@@ -6,6 +6,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 
+
+const toProperCase = (str: string) => {
+    const exceptions = ['and', 'in', 'of', 'a', 'with'];
+    return str.replace(/\w\S*/g, (txt, i) => {
+        if (i > 0 && exceptions.includes(txt.toLowerCase())) {
+            return txt.toLowerCase();
+        }
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+};
+
 // --- Reusable Macro Display Component ---
 const MacroBadge = ({ label, value, color, icon: Icon }: { label: string, value: string, color: string, icon: React.ElementType }) => (
     <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -23,13 +34,13 @@ const MealDescriptionModal = ({ meal, onClose }: { meal: any, onClose: () => voi
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
                 <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-xl font-bold">{meal.name}</h3>
+                    <h3 className="text-xl font-bold">{toProperCase(meal.name)}</h3>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
                         <X size={24} />
                     </button>
                 </div>
                 <div className="p-6 overflow-y-auto">
-                    <p>{meal.description}</p>
+                    <p>{toProperCase(meal.description)}</p>
                 </div>
             </div>
         </div>
@@ -47,13 +58,13 @@ const MealCard = ({ option, onSelect }: { option: any, onSelect: (meal: any) => 
             <div className="bg-green-100 p-2 rounded-full">
                 <ChefHat className="w-6 h-6 text-green-600 flex-shrink-0" />
             </div>
-            <h4 className="font-bold text-md text-gray-800 flex-grow pt-1">{option.meal.name}</h4>
+            <h4 className="font-bold text-lg text-gray-800 flex-grow pt-1">{toProperCase(option.meal.name)}</h4>
         </div>
         <p className="text-sm text-gray-600 mb-4 pl-12">
             {option.meal.description.length > 80
                 ? (
                     <>
-                        {`${option.meal.description.substring(0, 80)}...`}
+                        {`${toProperCase(option.meal.description).substring(0, 80)}...`}
                         <button onClick={() => onSelect(option.meal)} className="text-blue-500 hover:underline ml-1">Read More</button>
                     </>
                 )
@@ -67,7 +78,7 @@ const MealCard = ({ option, onSelect }: { option: any, onSelect: (meal: any) => 
         </div>
         {option.meal.allergies && (
             <div className="mb-4 pl-12">
-                <p className="text-xs text-gray-500"><span className="font-semibold">Allergens:</span> {option.meal.allergies}</p>
+                <p className="text-xs text-gray-500"><span className="font-semibold">Allergens:</span> {toProperCase(option.meal.allergies)}</p>
             </div>
         )}
     </div>
