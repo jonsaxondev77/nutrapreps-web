@@ -22,7 +22,7 @@ const nextConfig = {
       }, 
       {
         protocol: 'https',
-        hostname: 'nutrapreps-storage', 
+        hostname: 'nutrapreps.b-cdn.net', 
         port: '',
         pathname: '/**',
       }
