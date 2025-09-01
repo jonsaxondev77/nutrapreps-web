@@ -1,9 +1,10 @@
 "use client"
 
+import { bunnyImageField } from "@/lib/fields/BunnyImageField";
 import { richTextField } from "@/lib/fields/RichTextField";
 import { ReactIconMap, ReactIconOptions } from "@/utils/ReactIconsMap";
 import { ComponentConfig, Fields } from "@measured/puck";
-import NextImage from 'next/image';
+import Image from "next/image";
 import React from "react";
 
 // Add a 'variant' prop to choose the style
@@ -68,7 +69,7 @@ export const Card: ComponentConfig<CardProps> = {
             };
         } 
         else if (data.props.mediaType === 'image') {
-            fields.imageSrc = { type: 'text', label: "Image Url" };
+            fields.imageSrc = bunnyImageField("Image Url");
             fields.imageAlt = { type: 'text', label: "Alt Text" };
         }
 
@@ -133,12 +134,12 @@ export const Card: ComponentConfig<CardProps> = {
                 )}
 
                 {mediaType === 'image' && imageSrc && (
-                    <div className="w-full h-48 mb-6 rounded-lg overflow-hidden mx-auto">
-                        <NextImage
+                    <div className="w-full h-48 mb-6 rounded-lg overflow-hidden mx-auto relative">
+                        <Image
                             src={imageSrc}
                             alt={imageAlt || heading}
-                            width={100}
-                            height={100}
+                            fill
+                            sizes="100vw"
                             className="w-full h-full object-cover"
                         />
                     </div>

@@ -173,13 +173,7 @@ export const BunnyFileManager: React.FC<BunnyFileManagerProps> = ({ onFileSelect
         </div>
       </div>
 
-      <div className="p-4 border-t flex justify-end items-center">
-        <label htmlFor="file-upload" className="cursor-pointer bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 disabled:opacity-50">
-          {uploading ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
-          <span>{uploading ? 'Uploading...' : 'Upload Image'}</span>
-        </label>
-        <input id="file-upload" type="file" className="sr-only" onChange={handleFileUpload} disabled={uploading} />
-      </div>
+      
     </div>
   );
 };

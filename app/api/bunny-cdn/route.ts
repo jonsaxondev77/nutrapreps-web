@@ -96,17 +96,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'File and path are required' }, { status: 400 });
         }
 
-        // Clean the path - remove storage zone name if present and ensure proper formatting
         let cleanPath = path.replace('/nutrapreps-storage', '');
         if (!cleanPath.endsWith('/') && cleanPath !== '') {
             cleanPath += '/';
         }
-
-        // Convert file to array buffer
+        
+        // Use ArrayBuffer instead of converting to Buffer
         const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
 
-        // Construct the API URL for upload
         const uploadPath = `${cleanPath}${file.name}`;
         const apiUrl = `https://uk.storage.bunnycdn.com/nutrapreps-storage/${uploadPath}`;
 
@@ -118,7 +115,7 @@ export async function POST(request: Request) {
                 'AccessKey': process.env.BUNNY_CDN_STORAGE_API_KEY!,
                 'Content-Type': 'application/octet-stream',
             },
-            body: buffer,
+            body: arrayBuffer,
         });
 
         if (!uploadResponse.ok) {
@@ -127,8 +124,7 @@ export async function POST(request: Request) {
             throw new Error(`Upload failed: ${uploadResponse.status} - ${errorText}`);
         }
 
-        // Construct the CDN URL for the uploaded file
-        const fileUrl = `https://nutrapreps-storage.b-cdn.net${cleanPath}${file.name}`;
+        const fileUrl = `https://nutrapreps.b-cdn.net${cleanPath}${file.name}`;
 
         return NextResponse.json({ 
             url: fileUrl,
@@ -146,20 +142,39 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+    if (!API_STORAGE_KEY || !STORAGE_ZONE_NAME) {
+        return NextResponse.json({ error: 'CDN configuration missing' }, { status: 500 });
+    }
+
     try {
         const { searchParams } = new URL(request.url);
         const path = searchParams.get('path');
-        const fileName = searchParams.get('fileName');
 
-        if (!path || !fileName) {
-            return NextResponse.json({ error: 'Path and file name are required' }, { status: 400 });
+        if (!path) {
+            return NextResponse.json({ error: 'Path is required' }, { status: 400 });
+        }
+        
+        let cleanPath = path.replace(`/${STORAGE_ZONE_NAME}`, '').replace(/^\//, '');
+
+        const deleteResponse = await fetch(
+            `https://uk.storage.bunnycdn.com/${STORAGE_ZONE_NAME}/${cleanPath}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'AccessKey': API_STORAGE_KEY!
+                }
+            }
+        );
+
+        if (!deleteResponse.ok) {
+             const errorText = await deleteResponse.text();
+             console.error('Deletion failed:', deleteResponse.status, errorText);
+             throw new Error(`Deletion failed: ${deleteResponse.status} - ${errorText}`);
         }
 
-        await BunnyFile.delete(storageZone, `${path}${fileName}`);
-
-        return NextResponse.json({ success: true });
-    } catch (error) {
+        return NextResponse.json({ success: true, message: 'File or folder deleted successfully' });
+    } catch (error: any) {
         console.error('Error deleting file:', error);
-        return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to delete file or folder', details: error.message }, { status: 500 });
     }
 }
