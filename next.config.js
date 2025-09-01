@@ -19,6 +19,12 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
         port: '',
         pathname: '/**'
+      }, 
+      {
+        protocol: 'https',
+        hostname: process.env.NEXT_PUBLIC_BUNNY_CDN_PULL_ZONE_HOSTNAME, 
+        port: '',
+        pathname: '/**',
       }
     ],
   },

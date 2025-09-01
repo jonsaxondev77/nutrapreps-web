@@ -12,6 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bunny.net/storage-sdk": "^0.3.0",
     "@hookform/resolvers": "^5.2.1",
     "@measured/puck": "^0.20.1",
     "@reduxjs/toolkit": "^2.8.2",

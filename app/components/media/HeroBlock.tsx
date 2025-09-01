@@ -1,3 +1,4 @@
+import { bunnyImageField } from "@/lib/fields/BunnyImageField";
 import { richTextField } from "@/lib/fields/RichTextField";
 import { ComponentConfig } from "@measured/puck"
 import classNames from "classnames";
@@ -13,7 +14,7 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
     fields: {
         title: { type: "text" },
         subtitle: richTextField("Subtitle"),
-        backgroundImageUrl: { type: "text" },
+        backgroundImageUrl: bunnyImageField("Background Image"),
         align: {
             type: "radio",
             options: [
