@@ -22,7 +22,7 @@ const nextConfig = {
       }, 
       {
         protocol: 'https',
-        hostname: process.env.NEXT_PUBLIC_BUNNY_CDN_PULL_ZONE_HOSTNAME, 
+        hostname: 'nutrapreps-storage', 
         port: '',
         pathname: '/**',
       }
