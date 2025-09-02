@@ -148,7 +148,7 @@ export const Card: ComponentConfig<CardProps> = {
                 <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center">
                     {heading}
                 </h3>
-                <div className="mb-4" dangerouslySetInnerHTML={{ __html: snippet }}/>
+                <div className="mb-4 prose" dangerouslySetInnerHTML={{ __html: snippet }}/>
                 
                 {buttonText && buttonLink && !buttonDisabled && (
                     <div className="mt-auto text-center">

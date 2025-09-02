@@ -25,6 +25,12 @@ const nextConfig = {
         hostname: 'nutrapreps.b-cdn.net', 
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.qrserver.com', 
+        port: '',
+        pathname: '/**',
       }
     ],
   },

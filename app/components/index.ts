@@ -15,6 +15,7 @@ import { PricingCard } from "./design/PricingCard";
 import { TestimonialCard } from "./design/TestimonialCard";
 import { Footer } from "./design/Footer/Footer";
 import { Button } from "./design/Button";
+import { StatCard } from "./design/StatCard";
 
 export const components = {
     HeadingBlock,
@@ -25,6 +26,7 @@ export const components = {
     FourColumnBlock,
     RichTextBlock,
     Card,
+    StatCard,
     PricingCard,
     TestimonialCard,
     HeroBlock,

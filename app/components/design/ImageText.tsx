@@ -1,3 +1,4 @@
+import { bunnyImageField } from "@/lib/fields/BunnyImageField";
 import { richTextField } from "@/lib/fields/RichTextField";
 import { ComponentConfig } from "@measured/puck"
 import classNames from "classnames";
@@ -12,7 +13,7 @@ export type ImageTextBlockProps = {
 
 export const ImageTextBlock: ComponentConfig<ImageTextBlockProps> = {
     fields: {
-        imageUrl: { type: "text", label: "Image URL" },
+        imageUrl: bunnyImageField("Image"),
         title: { type: "text", label: "Title" },
         content: richTextField("Content"),
         imagePosition: {
@@ -32,7 +33,7 @@ export const ImageTextBlock: ComponentConfig<ImageTextBlockProps> = {
     },
     render: ({ imageUrl, title, content, imagePosition }) => {
         const image = (
-            <div className="w-full md:w-1/2">
+            <div className="relative w-full md:w-1/2 min-h-[400px]">
                 <Image
                     src={imageUrl}
                     alt={title}
@@ -57,7 +58,7 @@ export const ImageTextBlock: ComponentConfig<ImageTextBlockProps> = {
         return (
             <div className="py-12 px-4">
                 <div
-                    className={classNames("flex flex-col md:flex-row gap-8 max-w-7xl mx-auto", {
+                    className={classNames("flex flex-col md:flex-row gap-8 max-w-7xl mx-auto items-center", {
                         "md:flex-row-reverse": imagePosition === "right",
                     })}
                 >

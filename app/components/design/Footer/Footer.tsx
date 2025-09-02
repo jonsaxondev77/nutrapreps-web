@@ -70,7 +70,6 @@ export const Footer: ComponentConfig<FooterProps> = {
         title: "Company",
         links: [
           { label: "About Us", url: "/about" },
-          { label: "Careers", url: "/careers" },
         ],
       },
       {
@@ -78,6 +77,7 @@ export const Footer: ComponentConfig<FooterProps> = {
         links: [
           { label: "Contact Us", url: "/contact-us" },
           { label: "FAQ", url: "/faqs" },
+          { label: "Privacy", url: "/privacy"},
           { label: "Terms of Service", url: "/terms-of-service" },
         ],
       },
