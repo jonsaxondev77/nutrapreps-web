@@ -47,18 +47,21 @@ const Orders = () => {
             <h2 className="text-2xl font-bold mb-6">Order History</h2>
             <div className="space-y-4">
                 {orders.map(order => (
-                    <div key={order.id} className="p-4 border rounded-lg flex justify-between items-center">
-                        <div>
-                            <p className="font-bold">Order #{order.id}</p>
-                            <p className="text-sm text-gray-500">Placed on: {new Date(order.orderDate).toLocaleDateString()}</p>
+                    // Wrap the order div with a Next.js Link component
+                    <Link key={order.id} href={`/account/orders/${order.id}`} passHref>
+                        <div className="p-4 border rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors my-5">
+                            <div>
+                                <p className="font-bold">Order #{order.id}</p>
+                                <p className="text-sm text-gray-500">Placed on: {new Date(order.orderDate).toLocaleDateString()}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-bold">£{order.totalPrice.toFixed(2)}</p>
+                                <p className={`text-sm font-semibold ${order.hasPayment ? 'text-green-600' : 'text-orange-500'}`}>
+                                    {order.hasPayment ? 'Paid' : 'Payment Pending'}
+                                </p>
+                            </div>
                         </div>
-                        <div className="text-right">
-                            <p className="font-bold">£{order.totalPrice.toFixed(2)}</p>
-                            <p className={`text-sm font-semibold ${order.hasPayment ? 'text-green-600' : 'text-orange-500'}`}>
-                                {order.hasPayment ? 'Paid' : 'Payment Pending'}
-                            </p>
-                        </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
@@ -91,4 +94,3 @@ const Orders = () => {
 };
 
 export default Orders;
-

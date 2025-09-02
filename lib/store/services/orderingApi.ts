@@ -94,6 +94,9 @@ export const orderingApi = createApi({
     }),
     getOrderHistory: builder.query<PagedResponse<OrderHistoryItem>, { pageNumber: number; pageSize: number }>({
       query: ({ pageNumber, pageSize }) => `order/history?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    }),
+    getDetailedOrder: builder.query({
+      query: (id) => `order/details/${id}`,
     })
   }),
 });
@@ -106,5 +109,6 @@ export const {
   useGetStripeCustomerIdQuery,
   useGetOrderBySessionIdQuery,
   usePlaceOrderMutation,
-  useGetOrderHistoryQuery
+  useGetOrderHistoryQuery,
+  useGetDetailedOrderQuery
 } = orderingApi;
