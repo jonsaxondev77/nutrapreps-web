@@ -84,7 +84,7 @@ export const AccountContent = () => {
               </button>
               <button
                 onClick={() => setActiveTab('change-password')}
-                className={`flex items-center w-full text-left px-4 py-3 rounded-lg transition-colors text-lg ${activeTab === 'change-password'
+                className={`flex items-center w-full text-left px-4 py-3 rounded-lg transition-colors ${activeTab === 'change-password'
                     ? 'bg-green-600 text-white shadow-md'
                     : 'text-gray-600 hover:bg-gray-200'
                   }`}
