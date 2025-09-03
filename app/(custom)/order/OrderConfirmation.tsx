@@ -56,7 +56,7 @@ export default function OrderConfirmation() {
                 
                 <div className="mt-10 pt-6 border-t text-center">
                      <p className="text-2xl font-bold">Total Paid: £{order.totalPrice.toFixed(2)}</p>
-                     <p className="text-gray-500 mt-2">A confirmation email has been sent to you.</p>
+                     <p className="text-gray-500 mt-2">To view your order you can use the Go to My Account Button Below.</p>
                 </div>
 
                 <div className="mt-10 flex justify-center gap-4">

@@ -58,9 +58,9 @@ export const ThreeColumnBlock: ComponentConfig<ThreeColumnBlockProps> = {
       <div className={classNames("py-20", paddingClasses[padding], backgroundClasses[backgroundColor])}>
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-12">
-            <div className="min-h-[100px]"><Column1 /></div>
-            <div className="min-h-[100px]"><Column2 /></div>
-            <div className="min-h-[100px]"><Column3 /></div>
+            <div className="h-full flex [&>*]:w-full"><Column1 /></div>
+            <div className="h-full flex [&>*]:w-full"><Column2 /></div>
+            <div className="h-full flex [&>*]:w-full"><Column3 /></div>
           </div>
         </div>
       </div>
