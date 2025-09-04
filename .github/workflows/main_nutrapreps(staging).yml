@@ -84,7 +84,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'nutraprepsv2'
-          slot-name: 'Production'
+          app-name: 'nutrapreps(staging)'
+          slot-name: 'staging'
           package: .
           
