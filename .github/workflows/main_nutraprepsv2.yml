@@ -53,6 +53,7 @@ jobs:
           path: |
             .next/
             public/
+            node_modules/
             package.json
             package-lock.json
             next.config.js
