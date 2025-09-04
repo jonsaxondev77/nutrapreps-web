@@ -54,7 +54,6 @@ export const Footer: ComponentConfig<FooterProps> = {
           options: [
             { label: "Facebook", value: "Facebook" },
             { label: "Instagram", value: "Instagram" },
-            { label: "Twitter", value: "Twitter" },
           ],
         },
         url: { type: "text" },
@@ -83,9 +82,8 @@ export const Footer: ComponentConfig<FooterProps> = {
       },
     ],
     socialLinks: [
-      { platform: "Facebook", url: "#" },
-      { platform: "Instagram", url: "#" },
-      { platform: "Twitter", url: "#" },
+      { platform: "Facebook", url: "https://www.facebook.com/NutraPreps/" },
+      { platform: "Instagram", url: "https://www.instagram.com/nutrapreps/?hl=en" },
     ],
     copyrightText: "© 2024 Nutrapreps. All rights reserved.",
   },

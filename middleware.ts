@@ -48,3 +48,17 @@ export async function middleware(req: NextRequest) {
 
   return res;
 }
+
+export const config = {
+  matcher: [
+    /*
+     * Exclude all internal paths and files from middleware processing.
+     * The regex matches all paths that do NOT start with:
+     * - _next (Next.js internals)
+     * - api (API routes)
+     * - .well-known (Standard web paths)
+     * - A dot (for static files like favicon.ico, images, etc.)
+     */
+    "/((?!_next|api|.well-known|.*\\..*).*)",
+  ],
+};
