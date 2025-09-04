@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - nutraprepsv2
+name: Build and deploy Node.js app to Azure Web App - nutrapreps
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -21,51 +21,26 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
-
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: '22.x'
 
       - name: npm install, build, and test
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          NEXT_PUBLIC_API_URL: ${{secrets.NEXT_PUBLIC_API_URL}}
-          BUNNY_CDN_STORAGE_ZONE_NAME: ${{secrets.BUNNY_CDN_STORAGE_ZONE_NAME}}
-          BUNNY_CDN_STORAGE_API_KEY: ${{secrets.BUNNY_CDN_STORAGE_API_KEY}}
-          NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
-          NEXTAUTH_URL: ${{secrets.NEXTAUTH_URL}}
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}}
-          NEXT_PUBLIC_BUNNY_CDN_PULL_ZONE_HOSTNAME: ${{secrets.NEXT_PUBLIC_BUNNY_CDN_PULL_ZONE_HOSTNAME}}
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
-
+      
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            .next/
-            public/
-            node_modules/
-            package.json
-            package-lock.json
-            next.config.js
-            middleware.ts
-          include-hidden-files: true
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write 
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
@@ -76,15 +51,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4DC3201E9D55411B9472535C2EDFA81E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_19522B5F9C4545A1BB53A93370150EB6 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BE6DA8375FA7493784793B12B68675DB }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EF4F9CB6FE48436A8D8164EA1B06AABB }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6C8AFF2431954ED3A956D856DAC19458 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8220C51F4B9B4C578FF7A15784E6BD75 }}
 
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
-          app-name: 'nutrapreps(staging)'
+          app-name: 'nutrapreps'
           slot-name: 'staging'
           package: .
           
