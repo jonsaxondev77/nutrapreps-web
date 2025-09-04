@@ -52,6 +52,8 @@ jobs:
             package-lock.json
             next.config.js
             middleware.ts
+            server.js
+            web.config
           include-hidden-files: true
 
 
