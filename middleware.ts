@@ -7,6 +7,9 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const protectedPaths = ['/order', '/checkout', '/account'];
 
+  const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
+  const isEditRoute = req.nextUrl.pathname.endsWith("/edit");
+
   if (protectedPaths.some(path => req.nextUrl.pathname.startsWith(path))) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
@@ -18,7 +21,12 @@ export async function middleware(req: NextRequest) {
       url.searchParams.set('callbackUrl', req.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
+
+    if((isPuckEditorRoute || isEditRoute) && token.role != 'admin') {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   }
+  
 
   if (req.method === "GET") {
     // Rewrite routes that match "/[...puckPath]/edit" to "/puck/[...puckPath]"
