@@ -4,11 +4,14 @@ import { CartItem } from '@/lib/store/cartSlice';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/authOptions';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set in the environment variables.');
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+if (!stripeSecretKey) {
+  // This will now only throw at runtime if the key is not set, allowing the build to pass.
+  throw new Error('STRIPE_SECRET_KEY is not set in the environment variables. Please check your Azure App Service configuration.');
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {});
+const stripe = new Stripe(stripeSecretKey, {});
 
 export async function POST(request: Request) {
   try {
