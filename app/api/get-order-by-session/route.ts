@@ -3,14 +3,16 @@ import Stripe from 'stripe';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/authOptions'; // Adjust path as needed
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set in the environment variables.');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {});
-
 export async function POST(request: Request) {
   try {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+    if (!stripeSecretKey) {
+        return NextResponse.json({ error: 'Stripe secret key not configured.' }, { status: 500 });
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {});
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.jwtToken) {
