@@ -11,7 +11,8 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Highlighted change: Switch to a Linux runner for a more stable build
+    runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -33,7 +34,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: |
+            .next/
+            public/
+            node_modules/
+            package.json
+            package-lock.json
+            next.config.js
+            middleware.ts
+            server.js
+            web.config
+          include-hidden-files: true
+
 
   deploy:
     runs-on: ubuntu-latest
