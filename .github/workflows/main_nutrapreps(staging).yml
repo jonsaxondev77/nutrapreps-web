@@ -11,8 +11,7 @@ on:
 
 jobs:
   build:
-    # Highlighted change: Switch to a Linux runner for a more stable build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -34,18 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            .next/
-            public/
-            node_modules/
-            package.json
-            package-lock.json
-            next.config.js
-            middleware.ts
-            server.js
-            web.config
-          include-hidden-files: true
-
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -63,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EF4F9CB6FE48436A8D8164EA1B06AABB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6C8AFF2431954ED3A956D856DAC19458 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8220C51F4B9B4C578FF7A15784E6BD75 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_08A192E4D9B547F4B996623DA96BD581 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_30960A3B4AB0403C8544CC9065AC4B75 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7E29481B3810417D8579BEE1B06AF0DC }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
