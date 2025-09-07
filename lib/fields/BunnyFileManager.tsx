@@ -35,7 +35,7 @@ export const BunnyFileManager: React.FC<BunnyFileManagerProps> = ({ onFileSelect
   const [uploading, setUploading] = useState(false);
 
   const fetchFiles = useCallback(async (path: string) => {
-    console.log('Fetching files for path:', path);
+    
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -65,8 +65,7 @@ export const BunnyFileManager: React.FC<BunnyFileManagerProps> = ({ onFileSelect
   }, [fetchFiles]);
 
   const handleFileClick = (file: BunnyFile) => {
-    console.log('Clicked file:', file.ObjectName, 'IsDirectory:', file.IsDirectory);
-    console.log('Current path:', currentPath);
+   
 
     if (file.IsDirectory) {
       // Construct the full path for the directory
@@ -74,13 +73,10 @@ export const BunnyFileManager: React.FC<BunnyFileManagerProps> = ({ onFileSelect
         ? `/${file.ObjectName}/`
         : `${currentPath}${file.ObjectName}/`;
 
-      console.log('Navigating to path:', newPath);
-      console.log('Encoded URL:', `/api/bunny-cdn?path=${encodeURIComponent(newPath)}`);
-
       fetchFiles(newPath);
     } else {
       const imageUrl = `https://${process.env.NEXT_PUBLIC_BUNNY_CDN_PULL_ZONE_HOSTNAME}${file.Path}${file.ObjectName}`;
-      console.log('Selected image URL:', imageUrl);
+      
       onFileSelect(imageUrl);
     }
   };

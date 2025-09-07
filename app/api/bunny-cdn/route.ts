@@ -32,8 +32,6 @@ export async function GET(request: Request) {
             }
         }
 
-        console.log('API Path:', apiPath); // Debug
-
         const response = await fetch(
             `https://uk.storage.bunnycdn.com/nutrapreps-storage/${apiPath}`,
             {
@@ -106,8 +104,6 @@ export async function POST(request: Request) {
 
         const uploadPath = `${cleanPath}${file.name}`;
         const apiUrl = `https://uk.storage.bunnycdn.com/nutrapreps-storage/${uploadPath}`;
-
-        console.log('Uploading to:', apiUrl);
 
         const uploadResponse = await fetch(apiUrl, {
             method: 'PUT',

@@ -44,7 +44,6 @@ export async function POST(request: Request) {
       if (customerResponse.ok) {
         const customerData = await customerResponse.json();
         stripeCustomerId = customerData.stripeCustomerId;
-        console.log(`[API] SUCCESS: Fetched Stripe Customer ID: ${stripeCustomerId}`);
       } else {
         console.error(`Failed to fetch Stripe Customer ID from backend. Status: ${customerResponse.status}`);
       }

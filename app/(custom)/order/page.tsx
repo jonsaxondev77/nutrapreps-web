@@ -9,14 +9,20 @@ import { ReviewAndConfirm } from "./ReviewAndConfirm";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { resetOrder } from "@/lib/store/orderSlice";
 import { useGetOrderingStatusQuery } from "@/lib/store/services/settingsApi";
-import { Loader2 } from 'lucide-react';
-import OrderingCountdown from "./OrderingCountdown"; // Add this line
+import { useGetUserProfileQuery } from '@/lib/store/services/authApi';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import OrderingCountdown from "./OrderingCountdown";
 
 export default function OrderPage() {
     const [step, setStep] = useState(1);
     const dispatch = useAppDispatch();
     
+    // Fetch ordering status and user profile
     const { data: statusData, isLoading: isLoadingStatus, isError: isStatusError } = useGetOrderingStatusQuery();
+    const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError } = useGetUserProfileQuery();
+    
+    // Check if the user is restricted from ordering
+    const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
 
     useEffect(() => {
         dispatch(resetOrder());
@@ -30,7 +36,7 @@ export default function OrderPage() {
         setStep(1);
     };
     
-    if (isLoadingStatus) {
+    if (isLoadingStatus || isLoadingProfile) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-600">
                 <Loader2 className="w-12 h-12 animate-spin mb-4" />
@@ -38,9 +44,23 @@ export default function OrderPage() {
             </div>
         );
     }
-
-    // Now, instead of a simple message, render the new countdown component
-    if (isStatusError || !statusData || !statusData.isOrderingEnabled) {
+    
+    // Display a message for restricted users
+    if (isRestrictedUser) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+          <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+            <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold text-gray-800">Account Not Activated</h1>
+            <p className="text-gray-600 mt-2 mb-6">
+              Your account is currently under review and cannot place orders. Please contact support for more information.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    
+    if (isStatusError || isProfileError || !statusData || !statusData.isOrderingEnabled) {
         return <OrderingCountdown />;
     }
     

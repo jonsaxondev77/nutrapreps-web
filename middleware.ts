@@ -10,13 +10,8 @@ export async function middleware(req: NextRequest) {
   const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
   const isEditRoute = req.nextUrl.pathname.endsWith("/edit");
 
-  console.log(isPuckEditorRoute);
-  console.log(isEditRoute);
-
   if (protectedPaths.some(path => req.nextUrl.pathname.startsWith(path)) || isPuckEditorRoute || isEditRoute) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
-    console.log(token);
 
     // Redirect to signin if user is not logged in
     if (!token) {

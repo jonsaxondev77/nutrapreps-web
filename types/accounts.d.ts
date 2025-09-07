@@ -26,6 +26,7 @@ export interface UserProfile {
     addressLine2: string;
     city: string;
     postCode: string;
+    routeId: number;
     allergies: string;
     safePlaceDeliveryInstructions: string;
 }

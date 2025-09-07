@@ -11,8 +11,7 @@ const BACKEND_API_FETCH_URL = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function getPage(path: string): Promise<Data | null> {
   try {
-    console.log(`Forwarding fetch request for path "${path}" to backend API...`);
-
+   
     // Make a GET request to your backend service
     const backendResponse = await fetch(`${BACKEND_API_FETCH_URL}/pages?path=${encodeURIComponent(path)}`, {
       method: "GET",
@@ -23,7 +22,6 @@ export async function getPage(path: string): Promise<Data | null> {
     });
 
     if (backendResponse.status === 404) {
-      console.log(`Page data not found on backend for path: "${path}"`);
       return null; // Page not found
     }
 

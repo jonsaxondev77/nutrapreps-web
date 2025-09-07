@@ -9,6 +9,5 @@ app.prepare().then(() => {
     handle(req, res);
   }).listen(port, (err) => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
   });
 });
