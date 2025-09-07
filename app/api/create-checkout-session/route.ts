@@ -74,6 +74,25 @@ export async function POST(request: Request) {
         });
       }
 
+      // NEW: Add a line item for each meal with a supplement
+      const allMeals = [...item.meals.sunday, ...item.meals.wednesday].filter(Boolean);
+      allMeals.forEach(mealOption => {
+        const supplementPrice = parseFloat(mealOption!.meal.supplement);
+        if (supplementPrice > 0) {
+            line_items.push({
+                price_data: {
+                    currency: 'gbp',
+                    product_data: {
+                        name: `${mealOption!.meal.name} (Supplement)`,
+                        description: 'Meal Supplement',
+                    },
+                    unit_amount: Math.round(supplementPrice * 100),
+                },
+                quantity: 1,
+            });
+        }
+      });
+
       const allAddons = [...(item.addons.sunday || []), ...(item.addons.wednesday || [])];
       allAddons.forEach(addon => {
         if (addon.quantity > 0 && addon.item && typeof addon.item.price === 'number') {
