@@ -20,13 +20,18 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
         return <p className="text-center p-8">Your box configuration is empty. Please go back and select a plan.</p>;
     }
 
+    // Calculate supplements total by iterating through selected meals
+    const supplementsTotal = [...order.meals.sunday, ...order.meals.wednesday]
+        .filter(Boolean)
+        .reduce((total, mealOption) => total + parseFloat(mealOption!.meal.supplement), 0);
+
     const addonsTotal = [...order.addons.sunday, ...order.addons.wednesday]
         .reduce((total, addon) => total + addon.item.price * addon.quantity, 0);
 
     const dessertsTotal = order.desserts
         .reduce((total, dessert) => total + dessert.item.price * dessert.quantity, 0);
         
-    const grandTotal = order.plan.price + addonsTotal + dessertsTotal;
+    const grandTotal = order.plan.price + supplementsTotal + addonsTotal + dessertsTotal;
 
     const handleAddToCart = () => {
         dispatch(addItem({ order, totalPrice: grandTotal }));
@@ -151,6 +156,7 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                 <div className="mt-10 pt-6 border-t">
                     <div className="space-y-2 text-lg">
                         <div className="flex justify-between"><span>Plan: {order.plan.name}</span> <span>£{order.plan.price.toFixed(2)}</span></div>
+                        {supplementsTotal > 0 && <div className="flex justify-between text-gray-600"><span>Meal Supplements</span> <span>£{supplementsTotal.toFixed(2)}</span></div>}
                         {addonsTotal > 0 && <div className="flex justify-between text-gray-600"><span>Add-ons</span> <span>£{addonsTotal.toFixed(2)}</span></div>}
                         {dessertsTotal > 0 && <div className="flex justify-between text-gray-600"><span>Desserts</span> <span>£{dessertsTotal.toFixed(2)}</span></div>}
                         <div className="flex justify-between font-bold text-2xl border-t pt-2 mt-2">

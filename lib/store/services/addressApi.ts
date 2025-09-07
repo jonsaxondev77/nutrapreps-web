@@ -25,7 +25,7 @@ export interface AddressDetails {
 export const addressApi = createApi({
   reducerPath: 'addressApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/addresslookup/`,
+    baseUrl: `/api/proxy/addresslookup/`,
     prepareHeaders: async (headers) => {
       const session = await getSession();
       if (session?.user.jwtToken) {
