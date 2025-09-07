@@ -74,9 +74,9 @@ const MealCard = ({ option, onSelect }: { option: any, onSelect: (meal: any) => 
         </p>
         <div className="grid grid-cols-2 gap-2 mb-4 pl-12">
             <MacroBadge label="Calories" value={option.meal.calories || 'N/A'} color="text-red-500" icon={Flame} />
-            <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}g`} color="text-green-500" icon={Drumstick} />
-            <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}g`} color="text-yellow-500" icon={Wheat} />
-            <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}g`} color="text-blue-500" icon={Beef} />
+            <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}`} color="text-green-500" icon={Drumstick} />
+            <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}`} color="text-yellow-500" icon={Wheat} />
+            <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}`} color="text-blue-500" icon={Beef} />
         </div>
         {option.meal.allergies && (
             <div className="mb-4 pl-12">
