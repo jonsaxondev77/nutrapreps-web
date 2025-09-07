@@ -1,3 +1,4 @@
+// app/(custom)/menu/page.tsx
 'use client';
 
 import { useGetMealsQuery, useGetAddonsQuery, useGetExtrasQuery } from '@/lib/store/services/orderingApi';
@@ -5,6 +6,7 @@ import { Flame, Drumstick, Wheat, Beef, ChefHat, Cookie, X } from 'lucide-react'
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useGetOrderingStatusQuery } from '@/lib/store/services/settingsApi'; // Add this line
 
 
 const toProperCase = (str: string) => {
@@ -111,8 +113,12 @@ export default function MenuPage() {
     const { data: mealOptionsList = [], error: mealsError, isLoading: mealsLoading } = useGetMealsQuery();
     const { data: addonOptionsList = [], error: addonsError, isLoading: addonsLoading } = useGetAddonsQuery();
     const { data: dessertsList = [], error: dessertsError, isLoading: dessertsLoading } = useGetExtrasQuery();
+    
+    // Get ordering status
+    const { data: statusData, isLoading: isLoadingStatus } = useGetOrderingStatusQuery();
+    const isOrderingEnabled = statusData?.isOrderingEnabled ?? false;
 
-    const isLoading = mealsLoading || addonsLoading || dessertsLoading;
+    const isLoading = mealsLoading || addonsLoading || dessertsLoading || isLoadingStatus;
     const error = mealsError || addonsError || dessertsError;
 
     const openModal = (meal: any) => {
@@ -207,7 +213,16 @@ export default function MenuPage() {
                     </div>
                 )}
                 <div className="text-center mt-12">
-                    <Link href="/order" className="bg-green-600 text-white px-8 py-3 rounded-full hover:bg-green-700 transition duration-300 text-lg font-semibold">
+                    <Link
+                        href={isOrderingEnabled ? "/order" : "#"}
+                        className={`bg-green-600 text-white px-8 py-3 rounded-full hover:bg-green-700 transition duration-300 text-lg font-semibold ${!isOrderingEnabled ? 'bg-gray-400 cursor-not-allowed hover:bg-gray-400' : ''}`}
+                        onClick={(e) => {
+                            if (!isOrderingEnabled) {
+                                e.preventDefault();
+                                alert("Ordering is currently disabled."); // Or a more elegant solution like a toast
+                            }
+                        }}
+                    >
                         Order Now
                     </Link>
                 </div>

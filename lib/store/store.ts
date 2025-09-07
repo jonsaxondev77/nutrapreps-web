@@ -7,6 +7,7 @@ import cartReducer, { CartState } from './cartSlice';
 import { orderingApi } from './services/orderingApi';
 import { addressApi } from './services/addressApi';
 import { contactApi } from './services/contactApi';
+import { settingsApi } from './services/settingsApi';
 
 const saveToLocalStorage = (state: {cart: CartState}) => {
   try {
@@ -41,11 +42,14 @@ export const store = configureStore({
     [packageApi.reducerPath]: packageApi.reducer,
     [orderingApi.reducerPath]: orderingApi.reducer,
     [addressApi.reducerPath]: addressApi.reducer,
-    [contactApi.reducerPath]: contactApi.reducer
+    [contactApi.reducerPath]: contactApi.reducer,
+    [settingsApi.reducerPath]: settingsApi.reducer
   },
   preloadedState: loadFromLocalStorage(),
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, packageApi.middleware, orderingApi.middleware, addressApi.middleware, contactApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, packageApi.middleware,
+       orderingApi.middleware, addressApi.middleware, contactApi.middleware,
+       settingsApi.middleware),
 });
 
 store.subscribe(()=> saveToLocalStorage({cart: store.getState().cart}));
