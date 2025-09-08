@@ -42,6 +42,9 @@ export default function SignIn() {
       email,
       password,
     });
+
+    console.log(result);
+
     if (result?.ok) {
       const callbackUrl = searchParams.get('callbackUrl');
       router.push(callbackUrl || "/");

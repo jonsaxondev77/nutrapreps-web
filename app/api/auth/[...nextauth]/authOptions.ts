@@ -24,7 +24,8 @@ export const authOptions: NextAuthOptions = {
             });
 
             if(!response.ok) {
-                const errorText = response.text();
+                const errorText = await response.text(); // Await the response.text() call
+                console.error('Backend returned an error:', errorText);
                 return null;
             }
 

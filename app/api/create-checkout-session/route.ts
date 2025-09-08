@@ -120,6 +120,9 @@ export async function POST(request: Request) {
       });
     });
 
+    const isDualDelivery = cartItems.some((item: CartItem) => item.deliveryDays === "Both");
+    
+
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
@@ -138,10 +141,12 @@ export async function POST(request: Request) {
     }
 
     if (stripeShippingRateId) {
-        sessionParams.shipping_options = [{
-            shipping_rate: stripeShippingRateId,
-        }];
+       sessionParams.shipping_options = isDualDelivery
+            ? [{ shipping_rate: stripeShippingRateId }, { shipping_rate: stripeShippingRateId }]
+            : [{ shipping_rate: stripeShippingRateId }];
     }
+
+    console.log(sessionParams);
 
     const stripeSession = await stripe.checkout.sessions.create(sessionParams);
 
