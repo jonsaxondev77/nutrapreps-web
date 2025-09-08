@@ -18,7 +18,14 @@ export default function ViewCart() {
     const { data: shippingData } = useGetShippingDetailsQuery();
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
-    const shippingCost = shippingData?.cost ?? 0; // Dynamic shipping cost
+    
+    // Check if any cart item is for dual delivery
+    const isDualDelivery = cartItems.some((item) => item.deliveryDays === 'Both');
+    const baseShippingCost = shippingData?.cost ?? 0;
+    
+    // Dynamically set the shipping cost
+    const shippingCost = isDualDelivery ? baseShippingCost * 2 : baseShippingCost;
+    
     const total = subtotal + shippingCost;
 
     const handleContinueShopping = () => {
@@ -90,7 +97,7 @@ export default function ViewCart() {
                                     )}
                                 </div>
                             </div>
-                             <button onClick={() => dispatch(removeItem(item.id))} className="text-gray-400 hover:text-red-500 ml-auto sm:ml-4 flex-shrink-0">
+                            <button onClick={() => dispatch(removeItem(item.id))} className="text-gray-400 hover:text-red-500 ml-auto sm:ml-4 flex-shrink-0">
                                 <Trash2 size={20} />
                             </button>
                         </div>
