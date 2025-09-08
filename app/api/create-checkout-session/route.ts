@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    let stripeShippingRateId: string | null = null;
+    let baseShippingCost = 0;
     let stripeCustomerId = null;
     try {
       const shippingResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/shipping-details`, {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       });
       if (shippingResponse.ok) {
         const shippingData = await shippingResponse.json();
-        stripeShippingRateId = shippingData.stripeShippingRateId;
+        baseShippingCost = shippingData.cost;
       }
     } catch (e) {
       console.error("Could not fetch shipping details:", e);
@@ -121,8 +121,8 @@ export async function POST(request: Request) {
     });
 
     const isDualDelivery = cartItems.some((item: CartItem) => item.deliveryDays === "Both");
-    
 
+    const shippingCost = isDualDelivery ? baseShippingCost * 2 : baseShippingCost;
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
@@ -133,20 +133,24 @@ export async function POST(request: Request) {
       metadata: {
         order_id: orderId,
       },
-      allow_promotion_codes: true
+      allow_promotion_codes: true,
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: Math.round(shippingCost * 100),
+              currency: 'gbp',
+            },
+            display_name: isDualDelivery ? 'Dual Delivery' : 'Standard Delivery',
+          },
+        }
+      ],
     };
 
     if (stripeCustomerId) {
       sessionParams.customer = stripeCustomerId;
     }
-
-    if (stripeShippingRateId) {
-       sessionParams.shipping_options = isDualDelivery
-            ? [{ shipping_rate: stripeShippingRateId }, { shipping_rate: stripeShippingRateId }]
-            : [{ shipping_rate: stripeShippingRateId }];
-    }
-
-    console.log(sessionParams);
 
     const stripeSession = await stripe.checkout.sessions.create(sessionParams);
 
