@@ -1,23 +1,38 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
-
 import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  
+  // Construct the Content-Security-Policy header
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://checkout.stripe.com;
+    style-src 'self' https://nutrapreps.b-cdn.net 'unsafe-inline';
+    img-src 'self' https://*.stripe.com https://nutrapreps.b-cdn.net https://images.unsplash.com https://placehold.co;
+    connect-src 'self' https://checkout.stripe.com;
+    frame-src 'self' https://checkout.stripe.com;
+    font-src 'self' data:;
+    media-src 'self' https://nutrapreps.b-cdn.net;
+    object-src 'none';
+    base-uri 'self';
+  `;
+  
   const res = NextResponse.next();
-  const protectedPaths = ['/order', '/checkout', '/account'];
+  res.headers.set('Content-Security-Policy', cspHeader.replace(/\s{2,}/g, ' ').trim());
+  res.headers.set('x-nonce', nonce); // Pass nonce for scripts that need it
 
+  const protectedPaths = ['/order', '/checkout', '/account'];
   const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
   const isEditRoute = req.nextUrl.pathname.endsWith("/edit");
 
   if (protectedPaths.some(path => req.nextUrl.pathname.startsWith(path)) || isPuckEditorRoute || isEditRoute) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // Redirect to signin if user is not logged in
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = '/signin';
-      // Add a callbackUrl so the user is redirected back to the page they were trying to access
       url.searchParams.set('callbackUrl', req.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
@@ -29,18 +44,15 @@ export async function middleware(req: NextRequest) {
   
 
   if (req.method === "GET") {
-    // Rewrite routes that match "/[...puckPath]/edit" to "/puck/[...puckPath]"
     if (req.nextUrl.pathname.endsWith("/edit")) {
       const pathWithoutEdit = req.nextUrl.pathname.slice(
         0,
         req.nextUrl.pathname.length - 5
       );
       const pathWithEditPrefix = `/puck${pathWithoutEdit}`;
-
       return NextResponse.rewrite(new URL(pathWithEditPrefix, req.url));
     }
 
-    // Disable "/puck/[...puckPath]"
     if (req.nextUrl.pathname.startsWith("/puck")) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -51,14 +63,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Exclude all internal paths and files from middleware processing.
-     * The regex matches all paths that do NOT start with:
-     * - _next (Next.js internals)
-     * - api (API routes)
-     * - .well-known (Standard web paths)
-     * - A dot (for static files like favicon.ico, images, etc.)
-     */
     "/((?!_next|api|.well-known|.*\\..*).*)",
   ],
 };

@@ -92,6 +92,7 @@ export default function SignIn() {
                         onChange={(e) => setFirstname(e.target.value)}
                         required
                         className="pl-12 w-full py-3 bg-gray-100 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                        autoComplete="given-name"
                       />
                     </div>
                     <div className="relative w-full">
@@ -103,6 +104,7 @@ export default function SignIn() {
                         onChange={(e) => setLastname(e.target.value)}
                         required
                         className="pl-12 w-full py-3 bg-gray-100 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                        autoComplete="family-name"
                       />
                     </div>
                 </div>
@@ -117,6 +119,7 @@ export default function SignIn() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="pl-12 w-full py-3 bg-gray-100 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                autoComplete="email"
               />
             </div>
 
@@ -129,6 +132,7 @@ export default function SignIn() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="pl-12 w-full py-3 bg-gray-100 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                autoComplete={isRegistering ? "new-password" : "current-password"}
               />
             </div>
             

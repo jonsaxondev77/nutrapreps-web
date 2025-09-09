@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import { Footer } from "./components/design/Footer/Footer";
 import { FooterClient } from "./components/design/Footer/FooterClient";
 import { HeaderClient } from "./components/design/SiteHeader/HeaderClient";
@@ -5,11 +6,13 @@ import { SiteHeader } from "./components/design/SiteHeader/SiteHeader";
 import Providers from "./providers";
 import "./styles.css";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  
+  const nonce = (await headers()).get('x-nonce') || '';
   const headerDefaultProps = SiteHeader.defaultProps;
   const footerDefaultProps = Footer.defaultProps;
   return (

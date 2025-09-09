@@ -22,7 +22,7 @@ export default function OrderPage() {
     const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError } = useGetUserProfileQuery();
     
     // Check if the user is restricted from ordering
-    const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
+    const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12 || userProfile?.routeId == null;
 
     useEffect(() => {
         dispatch(resetOrder());

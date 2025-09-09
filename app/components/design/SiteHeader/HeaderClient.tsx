@@ -1,3 +1,4 @@
+// app/components/design/SiteHeader/HeaderClient.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -23,7 +24,6 @@ export const HeaderClient = ({ logoUrl, links }: SiteHeaderProps) => {
 
 
   const formatUrl = (url: string) => {
-    // If it's an anchor link and we are not on the homepage, prefix with "/"
     if (url.startsWith('#') && pathname !== '/') {
       return `/${url}`;
     }
@@ -36,7 +36,18 @@ export const HeaderClient = ({ logoUrl, links }: SiteHeaderProps) => {
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <Image src={logoUrl} alt="Nutrapreps Logo" width={80} height={80} />
+          {/* Added 'relative' to the parent div */}
+          <div className="relative h-20 w-20"> 
+            <Image 
+              src={logoUrl} 
+              alt="Nutrapreps Logo" 
+              fill
+              style={{ objectFit: 'contain' }}
+              // Added sizes prop. The value depends on your design, but this is a good starting point.
+              // This tells Next.js the image will take up to 20% of the viewport width.
+              sizes="(max-width: 768px) 100vw, 20vw" 
+            />
+          </div>
         </Link>
 
         {/* Desktop Navigation */}

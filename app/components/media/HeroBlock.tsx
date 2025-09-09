@@ -1,7 +1,9 @@
+import { NonceContext } from "@/app/context/NonceContext";
 import { bunnyImageField } from "@/lib/fields/BunnyImageField";
 import { richTextField } from "@/lib/fields/RichTextField";
 import { ComponentConfig } from "@measured/puck"
 import classNames from "classnames";
+import { useContext } from "react";
 
 export type HeroBlockProps = {
     title: string;
@@ -31,6 +33,8 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
         align: "left",
     },
     render: ({ title, subtitle, backgroundImageUrl, align }) => {
+
+        const nonce = useContext(NonceContext);
 
         function getBackgroundImage(srcOrSrcSet = '') {
             if (!srcOrSrcSet.includes(' ')) {
@@ -70,6 +74,7 @@ export const HeroBlock: ComponentConfig<HeroBlockProps> = {
                 <div
                     className="absolute inset-0 bg-cover bg-center z-0"
                     style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+                    nonce={nonce}
                 />
             
                

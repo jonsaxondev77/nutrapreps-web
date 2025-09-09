@@ -10,12 +10,6 @@ import { ItemSelection } from "./ItemSelection";
 export default function Order() {
     const [step, setStep] = useState(1);
 
-    /*
-    useEffect(() => {
-        clearLastCompletedOrder();
-        resetOrder();
-    }, [clearLastCompletedOrder, resetOrder]); // FIX: Added missing dependencies
-    */
 
     const nextStep = () => setStep(prev => prev + 1);
     const prevStep = () => setStep(prev => prev - 1);

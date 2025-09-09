@@ -1,3 +1,4 @@
+// app/components/design/Card.tsx
 "use client"
 
 import { bunnyImageField } from "@/lib/fields/BunnyImageField";
@@ -139,7 +140,8 @@ export const Card: ComponentConfig<CardProps> = {
                             src={imageSrc}
                             alt={imageAlt || heading}
                             fill
-                            sizes="100vw"
+                            // Updated sizes prop to be more responsive based on common layouts
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="w-full h-full object-cover"
                         />
                     </div>
