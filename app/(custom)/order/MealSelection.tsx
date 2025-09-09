@@ -7,6 +7,16 @@ import { selectMeal } from '@/lib/store/orderSlice';
 import { useGetMealsQuery } from '@/lib/store/services/orderingApi';
 import { X, ChefHat, CheckCircle2, PlusCircle, Flame, Drumstick, Wheat, Beef } from 'lucide-react';
 
+const toProperCase = (str: string) => {
+    const exceptions = ['and', 'in', 'of', 'a', 'with'];
+    return str.replace(/\w\S*/g, (txt, i) => {
+        if (i > 0 && exceptions.includes(txt.toLowerCase())) {
+            return txt.toLowerCase();
+        }
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+};
+
 // --- Reusable Macro Display Component ---
 const MacroBadge = ({ label, value, color, icon: Icon }: { label: string, value: string, color: string, icon: React.ElementType }) => (
     <div className="flex items-center gap-2 text-sm">
@@ -16,12 +26,32 @@ const MacroBadge = ({ label, value, color, icon: Icon }: { label: string, value:
     </div>
 );
 
+// --- Meal Description Modal ---
+const MealDescriptionModal = ({ meal, onClose }: { meal: any, onClose: () => void }) => {
+    if (!meal) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+                <div className="p-4 border-b flex justify-between items-center">
+                    <h3 className="text-xl font-bold">{toProperCase(meal.name)}</h3>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
+                        <X size={24} />
+                    </button>
+                </div>
+                <div className="p-6 overflow-y-auto">
+                    <p>{toProperCase(meal.description)}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 // --- Reusable Meal Card for the Modal (Now a Button) ---
-const MealCard = ({ option, onSelect }: { option: MealOption, onSelect: () => void }) => (
-    <button
-        onClick={onSelect}
-        className="border  rounded-lg overflow-hidden flex flex-col p-4 h-full group hover:shadow-lg hover:border-green-500 transition-all duration-200 cursor-pointer text-left"
+const MealCard = ({ option, onSelect, onReadMore }: { option: MealOption, onSelect: () => void, onReadMore: () => void }) => (
+    <div
+        className="border  rounded-lg overflow-hidden flex flex-col p-4 h-full group hover:shadow-lg hover:border-green-500 transition-all duration-200 text-left"
     >
         <div className="flex items-start gap-3 mb-4">
             <div className="bg-green-100 p-2 rounded-full">
@@ -29,21 +59,33 @@ const MealCard = ({ option, onSelect }: { option: MealOption, onSelect: () => vo
             </div>
             <h4 className="font-bold text-md text-gray-800 flex-grow pt-1">{option.meal.name}</h4>
         </div>
-        <div className="grid grid-cols-2 gap-2 mb-4 pl-11">
+        <p className="text-sm text-gray-600 mb-4 pl-12">
+            {option.meal.description.length > 80
+                ? (
+                    <>
+                        {`${toProperCase(option.meal.description).substring(0, 80)}...`}
+                        <button onClick={onReadMore} className="text-blue-500 hover:underline ml-1">Read More</button>
+                    </>
+                )
+                : toProperCase(option.meal.description)}
+        </p>
+        <div className="grid grid-cols-2 gap-2 mb-4 pl-12">
             <MacroBadge label="Calories" value={option.meal.calories || 'N/A'} color="text-red-500" icon={Flame} />
             <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}g`} color="text-green-500" icon={Drumstick} />
             <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}g`} color="text-yellow-500" icon={Wheat} />
             <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}g`} color="text-blue-500" icon={Beef} />
         </div>
         {option.meal.allergies && (
-            <div className="mb-4 pl-11">
+            <div className="mb-4 pl-12">
                 <p className="text-xs text-gray-500"><span className="font-semibold">Allergens:</span> {option.meal.allergies}</p>
             </div>
         )}
-        <div className="mt-auto w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold group-hover:bg-green-700 transition duration-300 text-center">
-            Select
+        <div className="mt-auto w-full">
+            <button onClick={onSelect} className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold group-hover:bg-green-700 transition duration-300 text-center">
+                Select
+            </button>
         </div>
-    </button>
+    </div>
 );
 
 // --- Meal Selection Modal ---
@@ -52,11 +94,13 @@ const MealSelectionModal = ({
     onClose,
     mealOptions,
     onSelectMeal,
+    onOpenDescription,
 }: {
     isOpen: boolean;
     onClose: () => void;
     mealOptions: MealOption[];
     onSelectMeal: (option: MealOption) => void;
+    onOpenDescription: (meal: any) => void;
 }) => {
     if (!isOpen) return null;
 
@@ -72,7 +116,7 @@ const MealSelectionModal = ({
                 <div className="p-6 overflow-y-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {mealOptions.map(option => (
-                            <MealCard key={option.id} option={option} onSelect={() => onSelectMeal(option)} />
+                            <MealCard key={option.id} option={option} onSelect={() => onSelectMeal(option)} onReadMore={() => onOpenDescription(option.meal)} />
                         ))}
                     </div>
                 </div>
@@ -93,13 +137,15 @@ export const MealSelection = ({ onNext, onBack }: Props) => {
     const { data: mealOptionsList = [], error, isLoading } = useGetMealsQuery();
 
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isDescriptionModalOpen, setDescriptionModalOpen] = useState(false);
+    const [selectedMealForDescription, setSelectedMealForDescription] = useState(null);
     const [activeSlot, setActiveSlot] = useState<{ day: 'sunday' | 'wednesday'; index: number } | null>(null);
 
     if (!plan || !deliveryDays) {
         return <p className="text-center p-8">Please select a plan and delivery day first.</p>;
     }
 
-    const handleOpenModal = (day: 'sunday' | 'wednesday', index: number) => {
+    const handleOpenMealModal = (day: 'sunday' | 'wednesday', index: number) => {
         setActiveSlot({ day, index });
         setModalOpen(true);
     };
@@ -110,6 +156,16 @@ export const MealSelection = ({ onNext, onBack }: Props) => {
         }
         setModalOpen(false);
         setActiveSlot(null);
+    };
+
+    const handleOpenDescriptionModal = (meal: any) => {
+        setSelectedMealForDescription(meal);
+        setDescriptionModalOpen(true);
+    };
+
+    const handleCloseDescriptionModal = () => {
+        setSelectedMealForDescription(null);
+        setDescriptionModalOpen(false);
     };
 
     const totalMeals = plan.mealsPerWeek;
@@ -130,25 +186,30 @@ export const MealSelection = ({ onNext, onBack }: Props) => {
                     const selectedMeal = meals[day][i];
                     const isSelected = !!selectedMeal;
                     return (
-                        <button key={i} onClick={() => handleOpenModal(day, i)} className={`p-4 border-2 rounded-lg flex flex-col items-center justify-center text-center h-48 transition-all duration-200 cursor-pointer ${isSelected ? 'border-green-500 bg-green-50' : 'border-dashed hover:border-green-400'}`}>
+                        <div key={i} className={`p-4 border-2 rounded-lg flex flex-col items-center justify-center text-center h-48 transition-all duration-200 cursor-pointer ${isSelected ? 'border-green-500 bg-green-50' : 'border-dashed hover:border-green-400'}`}>
                             {selectedMeal ? (
                                 <>
                                     <CheckCircle2 className="w-8 h-8 text-green-500 mb-2" />
                                     <p className="font-semibold flex-grow text-gray-800">{selectedMeal.meal.name}</p>
                                     <span className="mt-4 text-sm text-green-600 font-semibold">
-                                        Change Meal
+                                        <button onClick={() => handleOpenMealModal(day, i)}>Change Meal</button>
                                     </span>
                                 </>
                             ) : (
                                 <>
                                     <p className="text-gray-500 mb-4 font-medium">Meal {i + 1}</p>
-                                    <div className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 font-bold rounded-lg group-hover:bg-green-200 transition-colors">
+                                    <button onClick={() => handleOpenMealModal(day, i)} className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 font-bold rounded-lg group-hover:bg-green-200 transition-colors">
                                         <PlusCircle size={20} />
                                         Select Meal
-                                    </div>
+                                    </button>
                                 </>
                             )}
-                        </button>
+                            {selectedMeal && (
+                                <button onClick={() => handleOpenDescriptionModal(selectedMeal.meal)} className="mt-2 text-sm text-blue-500 hover:underline">
+                                    Read Description
+                                </button>
+                            )}
+                        </div>
                     );
                 })}
             </div>
@@ -162,7 +223,11 @@ export const MealSelection = ({ onNext, onBack }: Props) => {
                 onClose={() => setModalOpen(false)}
                 mealOptions={mealOptionsList}
                 onSelectMeal={handleSelectMeal}
+                onOpenDescription={handleOpenDescriptionModal}
             />
+            {isDescriptionModalOpen && (
+                <MealDescriptionModal meal={selectedMealForDescription} onClose={handleCloseDescriptionModal} />
+            )}
             {/* --- Progress Bar --- */}
             <div className="mb-8">
                 <div className="h-2 w-full bg-gray-200 rounded-full">
