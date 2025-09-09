@@ -9,8 +9,8 @@ export async function middleware(req: NextRequest) {
   const cspHeader = `
     frame-ancestors 'self';
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://checkout.stripe.com;
-    style-src 'self' https://nutrapreps.b-cdn.net;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://checkout.stripe.com;
+    style-src 'self' https://nutrapreps.b-cdn.net 'unsafe-inline';
     img-src 'self' https://*.stripe.com https://nutrapreps.b-cdn.net https://images.unsplash.com https://placehold.co;
     connect-src 'self' https://checkout.stripe.com;
     frame-src 'self' https://checkout.stripe.com;
@@ -23,7 +23,9 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   res.headers.set('Content-Security-Policy', cspHeader.replace(/\s{2,}/g, ' ').trim());
   res.headers.set('x-nonce', nonce);
-  res.headers.set('X-Frame-Options', 'DENY'); 
+  res.headers.set('X-Frame-Options', 'DENY');
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
 
   const protectedPaths = ['/order', '/checkout', '/account'];
   const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
@@ -39,6 +41,7 @@ export async function middleware(req: NextRequest) {
       const sanitizedCallbackUrl = new URL(req.nextUrl.pathname, req.nextUrl.origin).pathname;
       url.searchParams.set('callbackUrl', sanitizedCallbackUrl);
 
+      url.searchParams.set('callbackUrl', req.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
 

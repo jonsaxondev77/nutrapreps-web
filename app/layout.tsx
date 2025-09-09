@@ -17,6 +17,9 @@ export default async function RootLayout({
   const footerDefaultProps = Footer.defaultProps;
   return (
     <html lang="en" className="h-full bg-gray-50">
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body className="h-full">
         <Providers>
           <div className="flex flex-col min-h-screen">
