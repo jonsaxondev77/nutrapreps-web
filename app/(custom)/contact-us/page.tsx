@@ -102,19 +102,19 @@ const ContactUsPage = () => {
                         {/* Name Input */}
                         <div className="relative">
                             <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input {...register('name')} placeholder="Your Name" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" />
+                            <input {...register('name')} placeholder="Your Name" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" autoComplete="name" />
                             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
                         </div>
                         {/* Email Input */}
                         <div className="relative">
                             <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input {...register('email')} placeholder="Your Email" type="email" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" />
+                            <input {...register('email')} placeholder="Your Email" type="email" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" autoComplete="email" />
                             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                         </div>
                         {/* Subject Input */}
                         <div className="relative">
                             <FaTag className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input {...register('subject')} placeholder="Subject" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" />
+                            <input {...register('subject')} placeholder="Subject" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" autoComplete="on" />
                             {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>}
                         </div>
                         {/* Message Textarea */}
@@ -135,4 +135,3 @@ const ContactUsPage = () => {
 };
 
 export default ContactUsPage;
-

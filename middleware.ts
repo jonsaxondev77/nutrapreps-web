@@ -7,6 +7,7 @@ export async function middleware(req: NextRequest) {
   
   // Construct the Content-Security-Policy header
   const cspHeader = `
+    frame-ancestors 'self';
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://checkout.stripe.com;
     style-src 'self' https://nutrapreps.b-cdn.net 'unsafe-inline';
@@ -33,7 +34,10 @@ export async function middleware(req: NextRequest) {
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = '/signin';
-      url.searchParams.set('callbackUrl', req.nextUrl.pathname);
+
+      const sanitizedCallbackUrl = new URL(req.nextUrl.pathname, req.nextUrl.origin).pathname;
+      url.searchParams.set('callbackUrl', sanitizedCallbackUrl);
+
       return NextResponse.redirect(url);
     }
 
