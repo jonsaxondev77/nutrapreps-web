@@ -4,11 +4,9 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-  const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
-  const isEditRoute = req.nextUrl.pathname.endsWith("/edit");
-
+  
   // Construct the Content-Security-Policy header
-  let cspHeader = `
+  const cspHeader = `
     frame-ancestors 'self';
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://checkout.stripe.com;
@@ -21,37 +19,25 @@ export async function middleware(req: NextRequest) {
     object-src 'none';
     base-uri 'self';
   `;
-
-  // If in the Puck editor, allow 'unsafe-inline' and 'unsafe-eval' for styles and scripts
-  if (isPuckEditorRoute || isEditRoute) {
-    cspHeader = `
-      frame-ancestors 'self';
-      default-src 'self';
-      script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://checkout.stripe.com;
-      style-src 'self' 'unsafe-inline' https://nutrapreps.b-cdn.net;
-      img-src 'self' https://*.stripe.com https://nutrapreps.b-cdn.net https://images.unsplash.com https://placehold.co;
-      connect-src 'self' https://checkout.stripe.com;
-      frame-src 'self' https://checkout.stripe.com;
-      font-src 'self' data:;
-      media-src 'self' https://nutrapreps.b-cdn.net;
-      object-src 'none';
-      base-uri 'self';
-    `;
-  }
   
   const res = NextResponse.next();
   res.headers.set('Content-Security-Policy', cspHeader.replace(/\s{2,}/g, ' ').trim());
-  res.headers.set('x-nonce', nonce);
+  res.headers.set('x-nonce', nonce); // Pass nonce for scripts that need it
 
   const protectedPaths = ['/order', '/checkout', '/account'];
+  const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
+  const isEditRoute = req.nextUrl.pathname.endsWith("/edit");
+
   if (protectedPaths.some(path => req.nextUrl.pathname.startsWith(path)) || isPuckEditorRoute || isEditRoute) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = '/signin';
+
       const sanitizedCallbackUrl = new URL(req.nextUrl.pathname, req.nextUrl.origin).pathname;
       url.searchParams.set('callbackUrl', sanitizedCallbackUrl);
+
       return NextResponse.redirect(url);
     }
 
@@ -59,6 +45,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
+  
 
   if (req.method === "GET") {
     if (req.nextUrl.pathname.endsWith("/edit")) {
