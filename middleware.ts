@@ -18,6 +18,7 @@ export async function middleware(req: NextRequest) {
     media-src 'self' https://nutrapreps.b-cdn.net;
     object-src 'none';
     base-uri 'self';
+    form-action: 'self';
   `;
   
   const res = NextResponse.next();
