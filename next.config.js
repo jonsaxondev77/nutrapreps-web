@@ -1,4 +1,5 @@
 const nextConfig = {
+  poweredByHeader: false,
   images: {
     dangerouslyAllowSVG: true,
     remotePatterns: [
@@ -39,8 +40,7 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true
-  }
-  
+  }  
 };
 
 module.exports = nextConfig;
