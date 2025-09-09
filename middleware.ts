@@ -22,7 +22,8 @@ export async function middleware(req: NextRequest) {
   
   const res = NextResponse.next();
   res.headers.set('Content-Security-Policy', cspHeader.replace(/\s{2,}/g, ' ').trim());
-  res.headers.set('x-nonce', nonce); // Pass nonce for scripts that need it
+  res.headers.set('x-nonce', nonce);
+  res.headers.set('X-Frame-Options', 'DENY'); 
 
   const protectedPaths = ['/order', '/checkout', '/account'];
   const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
