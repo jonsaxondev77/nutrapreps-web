@@ -12,13 +12,13 @@ export async function middleware(req: NextRequest) {
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://checkout.stripe.com;
     style-src 'self' https://nutrapreps.b-cdn.net 'unsafe-inline';
     img-src 'self' https://*.stripe.com https://nutrapreps.b-cdn.net https://images.unsplash.com https://placehold.co;
-    connect-src 'self' https://checkout.stripe.com;
+    connect-src 'self' https://checkout.stripe.com https://ukwest-0.in.applicationinsights.azure.com https://js.monitor.azure.com;
     frame-src 'self' https://checkout.stripe.com;
     font-src 'self' data:;
     media-src 'self' https://nutrapreps.b-cdn.net;
     object-src 'none';
     base-uri 'self';
-    form-action: 'self';
+    form-action 'self';
   `;
   
   const res = NextResponse.next();
@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
   res.headers.set('X-Content-Type-Options', 'nosniff');
   res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
 
-  const protectedPaths = ['/order', '/checkout', '/account'];
+  const protectedPaths = ['/order', '/checkout', '/account', '/cart'];
   const isPuckEditorRoute = req.nextUrl.pathname.startsWith("/puck");
   const isEditRoute = req.nextUrl.pathname.endsWith("/edit");
 

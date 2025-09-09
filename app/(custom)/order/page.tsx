@@ -12,31 +12,79 @@ import { useGetOrderingStatusQuery } from "@/lib/store/services/settingsApi";
 import { useGetUserProfileQuery } from '@/lib/store/services/authApi';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import OrderingCountdown from "./OrderingCountdown";
+import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+
+let appInsights: ApplicationInsights | null = null;
+
+const initializeAppInsights = async () => {
+    if (!appInsights) {
+        try {
+            const res = await fetch('/api/telemetry-config');
+            const data = await res.json();
+            const connectionString = data.connectionString;
+
+            if (connectionString) {
+                appInsights = new ApplicationInsights({
+                    config: {
+                        connectionString: connectionString,
+                        enableAutoRouteTracking: true,
+                    }
+                });
+                appInsights.loadAppInsights();
+            }
+        } catch (error) {
+            console.error("Failed to fetch Application Insights config:", error);
+        }
+    }
+};
 
 export default function OrderPage() {
     const [step, setStep] = useState(1);
     const dispatch = useAppDispatch();
-    
+
     // Fetch ordering status and user profile
     const { data: statusData, isLoading: isLoadingStatus, isError: isStatusError } = useGetOrderingStatusQuery();
     const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError } = useGetUserProfileQuery();
-    
+
     // Check if the user is restricted from ordering
     const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
-    
+
+    useEffect(() => {
+        // Initialize Application Insights when the component mounts
+        initializeAppInsights();
+    }, []);
 
     useEffect(() => {
         dispatch(resetOrder());
     }, [dispatch]);
 
+    useEffect(() => {
+        if (!isLoadingProfile && isRestrictedUser) {
+            if (appInsights) {
+                appInsights.trackEvent({
+                    name: 'RestrictedUserAccess',
+                    properties: {
+                        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
+                        routeId: userProfile?.routeId,
+                        email: userProfile?.email,
+                        page: '/order'
+                    }
+                });
+            } else {
+                // You might want to retry after a short delay or log this
+                console.warn("Application Insights not yet initialized. Skipping event tracking.");
+            }
+        }
+    }, [isRestrictedUser, isLoadingProfile, userProfile]);
+
     const nextStep = () => setStep(prev => prev + 1);
     const prevStep = () => setStep(prev => prev - 1);
-    
+
     const restart = () => {
         dispatch(resetOrder());
         setStep(1);
     };
-    
+
     if (isLoadingStatus || isLoadingProfile) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-600">
@@ -45,26 +93,26 @@ export default function OrderPage() {
             </div>
         );
     }
-    
+
     // Display a message for restricted users
     if (isRestrictedUser) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
-          <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
-            <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-gray-800">Account Not Activated</h1>
-            <p className="text-gray-600 mt-2 mb-6">
-              Your account is currently under review and cannot place orders. Please contact support for more information.
-            </p>
-          </div>
-        </div>
-      );
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                    <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+                    <h1 className="text-3xl font-bold text-gray-800">Account Not Activated</h1>
+                    <p className="text-gray-600 mt-2 mb-6">
+                        Your account is currently under review and cannot place orders. Please contact support for more information.
+                    </p>
+                </div>
+            </div>
+        );
     }
-    
+
     if (isStatusError || isProfileError || !statusData || !statusData.isOrderingEnabled) {
         return <OrderingCountdown />;
     }
-    
+
     const renderStep = () => {
         switch (step) {
             case 1:
@@ -95,7 +143,7 @@ export default function OrderPage() {
                 return <PlanAndDelivery onNext={nextStep} />;
         }
     };
-    
+
     return (
         <div className="flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             {renderStep()}
