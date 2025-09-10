@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { removeItem } from '@/lib/store/cartSlice';
 import { resetOrder } from '@/lib/store/orderSlice';
 import { useGetShippingDetailsQuery } from '@/lib/store/services/authApi';
-import { ShoppingCart, Trash2 } from 'lucide-react';
+import { ShoppingCart, Trash2, Tag } from 'lucide-react'; // Added Tag icon
 
 export default function ViewCart() {
     const dispatch = useAppDispatch();
@@ -60,48 +60,60 @@ export default function ViewCart() {
                 </div>
 
                 <div className="space-y-6">
-                    {cartItems.map(item => (
-                        <div key={item.id} className="flex flex-col sm:flex-row items-start gap-4 p-4 border rounded-lg">
-                            <Image
-                                src="https://placehold.co/200x200/e2e8f0/4a5568?text=Meal+Box"
-                                alt={item.plan?.name || 'Meal Box'}
-                                width={128}
-                                height={128}
-                                className="rounded-md w-32 h-32 object-cover flex-shrink-0"
-                            />
-                            <div className="flex-grow">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-bold text-lg text-gray-800">{item.plan?.name}</h3>
-                                        <p className="text-sm text-gray-500">{item.deliveryDays} Delivery</p>
+                    {cartItems.map(item => {
+                        const allMeals = [...item.meals.sunday, ...item.meals.wednesday].filter(Boolean);
+                        const hasSupplements = allMeals.some(meal => parseFloat(meal.meal.supplement) > 0);
+                        
+                        return (
+                            <div key={item.id} className="flex flex-col sm:flex-row items-start gap-4 p-4 border rounded-lg">
+                                <Image
+                                    src="https://placehold.co/200x200/e2e8f0/4a5568?text=Meal+Box"
+                                    alt={item.plan?.name || 'Meal Box'}
+                                    width={128}
+                                    height={128}
+                                    className="rounded-md w-32 h-32 object-cover flex-shrink-0"
+                                />
+                                <div className="flex-grow">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-bold text-lg text-gray-800">{item.plan?.name}</h3>
+                                                {hasSupplements && (
+                                                    <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                                                        <Tag size={12} /> Supplements
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-gray-500">{item.deliveryDays} Delivery</p>
+                                        </div>
+                                        <p className="font-semibold text-lg">£{item.totalPrice.toFixed(2)}</p>
                                     </div>
-                                    <p className="font-semibold text-lg">£{item.totalPrice.toFixed(2)}</p>
+                                    <div className="mt-2 text-xs text-gray-600 space-y-2">
+                                        {(item.addons.sunday.length > 0 || item.addons.wednesday.length > 0) && (
+                                            <div>
+                                                <p className="font-semibold">Add-ons:</p>
+                                                <ul className="list-disc list-inside pl-2">
+                                                    {item.addons.sunday.map(addon => <li key={addon.item.id}>{addon.quantity}x {addon.item.name} (Sun)</li>)}
+                                                    {item.addons.wednesday.map(addon => <li key={addon.item.id}>{addon.quantity}x {addon.item.name} (Wed)</li>)}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        {item.desserts.length > 0 && (
+                                            <div>
+                                                <p className="font-semibold">Desserts:</p>
+                                                <ul className="list-disc list-inside pl-2">
+                                                    {item.desserts.map(dessert => <li key={dessert.item.id}>{dessert.quantity}x {dessert.item.name}</li>)}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="mt-2 text-xs text-gray-600 space-y-2">
-                                    {(item.addons.sunday.length > 0 || item.addons.wednesday.length > 0) && (
-                                        <div>
-                                            <p className="font-semibold">Add-ons:</p>
-                                            <ul className="list-disc list-inside pl-2">
-                                                {item.addons.sunday.map(addon => <li key={addon.item.id}>{addon.quantity}x {addon.item.name} (Sun)</li>)}
-                                                {item.addons.wednesday.map(addon => <li key={addon.item.id}>{addon.quantity}x {addon.item.name} (Wed)</li>)}
-                                            </ul>
-                                        </div>
-                                    )}
-                                    {item.desserts.length > 0 && (
-                                        <div>
-                                            <p className="font-semibold">Desserts:</p>
-                                            <ul className="list-disc list-inside pl-2">
-                                                {item.desserts.map(dessert => <li key={dessert.item.id}>{dessert.quantity}x {dessert.item.name}</li>)}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
+                                <button onClick={() => dispatch(removeItem(item.id))} className="text-gray-400 hover:text-red-500 ml-auto sm:ml-4 flex-shrink-0">
+                                    <Trash2 size={20} />
+                                </button>
                             </div>
-                            <button onClick={() => dispatch(removeItem(item.id))} className="text-gray-400 hover:text-red-500 ml-auto sm:ml-4 flex-shrink-0">
-                                <Trash2 size={20} />
-                            </button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Order Summary */}

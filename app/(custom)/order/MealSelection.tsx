@@ -5,7 +5,8 @@ import { MealOption } from '@/types/ordering';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { selectMeal } from '@/lib/store/orderSlice';
 import { useGetMealsQuery } from '@/lib/store/services/orderingApi';
-import { X, ChefHat, CheckCircle2, PlusCircle, Flame, Drumstick, Wheat, Beef } from 'lucide-react';
+import { X, ChefHat, CheckCircle2, PlusCircle, Flame, Drumstick, Wheat, Beef, Tag } from 'lucide-react';
+import { Modal } from '@/app/components/design/Modal';
 
 const toProperCase = (str: string) => {
     const exceptions = ['and', 'in', 'of', 'a', 'with'];
@@ -31,19 +32,14 @@ const MealDescriptionModal = ({ meal, onClose }: { meal: any, onClose: () => voi
     if (!meal) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-xl font-bold">{toProperCase(meal.name)}</h3>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
-                        <X size={24} />
-                    </button>
-                </div>
-                <div className="p-6 overflow-y-auto">
+        <Modal onClose={onClose}>
+            <div className="flex flex-col">
+                <h3 className="text-xl font-bold mb-4">{toProperCase(meal.name)}</h3>
+                <div className="overflow-y-auto">
                     <p>{toProperCase(meal.description)}</p>
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 
@@ -51,15 +47,21 @@ const MealDescriptionModal = ({ meal, onClose }: { meal: any, onClose: () => voi
 // --- Reusable Meal Card for the Modal (Now a Button) ---
 const MealCard = ({ option, onSelect, onReadMore }: { option: MealOption, onSelect: () => void, onReadMore: () => void }) => (
     <div
-        className="border  rounded-lg overflow-hidden flex flex-col p-4 h-full group hover:shadow-lg hover:border-green-500 transition-all duration-200 text-left"
+        className="border rounded-lg overflow-hidden flex flex-col p-4 h-full group hover:shadow-lg hover:border-green-500 transition-all duration-200 text-left relative"
     >
-        <div className="flex items-start gap-3 mb-4">
+        {parseFloat(option.meal.supplement) > 0 && (
+            <div className="absolute top-0 right-0 bg-orange-500 text-white text-sm font-bold p-2 rounded-bl-lg rounded-tr-lg flex items-center gap-1">
+                <Tag size={16}/>
+                +£{parseFloat(option.meal.supplement).toFixed(2)}
+            </div>
+        )}
+        <div className="flex items-start gap-3 mb-4 mt-6">
             <div className="bg-green-100 p-2 rounded-full">
                 <ChefHat className="w-6 h-6 text-green-600 flex-shrink-0" />
             </div>
             <h4 className="font-bold text-md text-gray-800 flex-grow pt-1">{option.meal.name}</h4>
         </div>
-        <p className="text-sm text-gray-600 mb-4 pl-12">
+        <p className="text-sm text-gray-600 mb-4">
             {option.meal.description.length > 80
                 ? (
                     <>
@@ -69,14 +71,14 @@ const MealCard = ({ option, onSelect, onReadMore }: { option: MealOption, onSele
                 )
                 : toProperCase(option.meal.description)}
         </p>
-        <div className="grid grid-cols-2 gap-2 mb-4 pl-12">
+        <div className="grid grid-cols-2 gap-2 mb-4">
             <MacroBadge label="Calories" value={option.meal.calories || 'N/A'} color="text-red-500" icon={Flame} />
-            <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}g`} color="text-green-500" icon={Drumstick} />
-            <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}g`} color="text-yellow-500" icon={Wheat} />
-            <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}g`} color="text-blue-500" icon={Beef} />
+            <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}`} color="text-green-500" icon={Drumstick} />
+            <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}`} color="text-yellow-500" icon={Wheat} />
+            <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}`} color="text-blue-500" icon={Beef} />
         </div>
         {option.meal.allergies && (
-            <div className="mb-4 pl-12">
+            <div className="mb-4">
                 <p className="text-xs text-gray-500"><span className="font-semibold">Allergens:</span> {option.meal.allergies}</p>
             </div>
         )}
@@ -105,13 +107,10 @@ const MealSelectionModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
+        <Modal onClose={onClose}>
+            <div className="flex flex-col">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-xl font-bold">Choose a Meal</h3>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
-                        <X size={24} />
-                    </button>
                 </div>
                 <div className="p-6 overflow-y-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -121,7 +120,7 @@ const MealSelectionModal = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 

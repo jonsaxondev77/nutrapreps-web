@@ -44,7 +44,7 @@ export default function OrderPage() {
 
     // Fetch ordering status and user profile
     const { data: statusData, isLoading: isLoadingStatus, isError: isStatusError } = useGetOrderingStatusQuery();
-    const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError } = useGetUserProfileQuery();
+    const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError, error: profileError } = useGetUserProfileQuery();
 
     // Check if the user is restricted from ordering
     const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
@@ -109,7 +109,24 @@ export default function OrderPage() {
         );
     }
 
-    if (isStatusError || isProfileError || !statusData || !statusData.isOrderingEnabled) {
+    if(isProfileError) {
+        if (appInsights) {
+            appInsights.trackException({ error: new Error('Failed to load user profile for ordering'), properties: { errorMessage: JSON.stringify(profileError) } });
+        }
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                    <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h1 className="text-3xl font-bold text-gray-800">Error Loading Profile</h1>
+                    <p className="text-gray-600 mt-2 mb-6">
+                        We couldn't load your profile details. Please try refreshing the page or contact support if the problem persists.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (isStatusError || !statusData || !statusData.isOrderingEnabled) {
         return <OrderingCountdown />;
     }
 
