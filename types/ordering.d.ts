@@ -23,6 +23,7 @@ export interface Meal {
     calories: string;
     allergies: string;
     supplement: string;
+    spiceRating: number;
 }
 
 export interface MealOption {

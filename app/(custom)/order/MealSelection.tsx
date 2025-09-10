@@ -7,6 +7,7 @@ import { selectMeal } from '@/lib/store/orderSlice';
 import { useGetMealsQuery } from '@/lib/store/services/orderingApi';
 import { X, ChefHat, CheckCircle2, PlusCircle, Flame, Drumstick, Wheat, Beef, Tag } from 'lucide-react';
 import { Modal } from '@/app/components/design/Modal';
+import SpiceRating from '@/app/components/custom/SpiceRating';
 
 const toProperCase = (str: string) => {
     const exceptions = ['and', 'in', 'of', 'a', 'with'];
@@ -59,7 +60,10 @@ const MealCard = ({ option, onSelect, onReadMore }: { option: MealOption, onSele
             <div className="bg-green-100 p-2 rounded-full">
                 <ChefHat className="w-6 h-6 text-green-600 flex-shrink-0" />
             </div>
-            <h4 className="font-bold text-md text-gray-800 flex-grow pt-1">{option.meal.name}</h4>
+            <div className="flex flex-col">
+                 <h4 className="font-bold text-md text-gray-800 mb-2">{option.meal.name}</h4>
+                 <SpiceRating rating={option.meal.spiceRating || 0} />
+            </div>
         </div>
         <p className="text-sm text-gray-600 mb-4">
             {option.meal.description.length > 80
@@ -73,9 +77,9 @@ const MealCard = ({ option, onSelect, onReadMore }: { option: MealOption, onSele
         </p>
         <div className="grid grid-cols-2 gap-2 mb-4">
             <MacroBadge label="Calories" value={option.meal.calories || 'N/A'} color="text-red-500" icon={Flame} />
-            <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}`} color="text-green-500" icon={Drumstick} />
-            <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}`} color="text-yellow-500" icon={Wheat} />
-            <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}`} color="text-blue-500" icon={Beef} />
+            <MacroBadge label="Protein" value={`${option.meal.protein || 'N/A'}g`} color="text-green-500" icon={Drumstick} />
+            <MacroBadge label="Carbs" value={`${option.meal.carbs || 'N/A'}g`} color="text-yellow-500" icon={Wheat} />
+            <MacroBadge label="Fat" value={`${option.meal.fat || 'N/A'}g`} color="text-blue-500" icon={Beef} />
         </div>
         {option.meal.allergies && (
             <div className="mb-4">
@@ -203,11 +207,7 @@ export const MealSelection = ({ onNext, onBack }: Props) => {
                                     </button>
                                 </>
                             )}
-                            {selectedMeal && (
-                                <button onClick={() => handleOpenDescriptionModal(selectedMeal.meal)} className="mt-2 text-sm text-blue-500 hover:underline">
-                                    Read Description
-                                </button>
-                            )}
+                            
                         </div>
                     );
                 })}

@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { OrderItem } from '@/types/ordering';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { updateAddonQuantity, updateDessertQuantity } from '@/lib/store/orderSlice';
-import { Plus, Minus, Cookie, Salad, Info, Flame, Drumstick, Wheat, Beef } from 'lucide-react';
+import { Plus, Minus, Cookie, Salad, Info, Flame, Drumstick, Wheat, Beef, Tag } from 'lucide-react';
 import { useGetAddonsQuery, useGetExtrasQuery } from '@/lib/store/services/orderingApi';
 
 // --- Reusable Quantity Selector (New Design) ---
@@ -41,6 +42,30 @@ const MacroBadge = ({ label, value, color, icon: Icon }: { label: string, value:
     </div>
 );
 
+// --- New: Spice Rating Component ---
+const SpiceRating = ({ rating }: { rating: number }) => {
+    // If rating is 0, display a "Mild" badge.
+    if (!rating || rating === 0) {
+        return (
+            <div className="flex items-center space-x-1">
+                <span className="bg-gray-200 text-gray-700 text-xs font-bold px-2 py-1 rounded-full">Mild</span>
+            </div>
+        );
+    }
+    
+    // Otherwise, display chili icons for ratings 1-5.
+    return (
+        <div className="flex items-center space-x-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+                <Flame
+                    key={i}
+                    className={`w-4 h-4 ${i < rating ? 'text-orange-500' : 'text-gray-300'} fill-current`}
+                />
+            ))}
+        </div>
+    );
+};
+
 
 // --- Main ItemSelection Component ---
 interface ItemSelectionProps {
@@ -60,7 +85,7 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
     const isLoading = addonsLoading || extrasLoading;
     const error = extrasError || addonsError;
 
-    const items: (OrderItem & { fat?: string; carbs?: string; protein?: string; calories?: string, allergens?: string; })[] = (itemType === 'addon'
+    const items: any[] = (itemType === 'addon'
         ? addonsData?.map(a => ({
             id: a.id,
             name: a.meal.name,
@@ -69,7 +94,8 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
             protein: a.meal.protein,
             fat: a.meal.fat,
             carbs: a.meal.carbs,
-            allergens: a.meal.allergies
+            allergens: a.meal.allergies,
+            spiceRating: a.meal.spiceRating,
            }))
         : extrasData?.map(e => ({ id: e.id, name: e.name, price: parseFloat(e.price), allergens: e.allergens }))
     ) || [];
@@ -81,18 +107,19 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {items.map(item => {
-                    // Correctly find the quantity by looking inside the 'item' property
                     const sundayQuantity = order.addons.sunday.find(ci => ci.item.id === item.id)?.quantity || 0;
                     const wednesdayQuantity = order.addons.wednesday.find(ci => ci.item.id === item.id)?.quantity || 0;
+                    const hasSupplementPrice = parseFloat(item.price) > 0;
+
                     return (
                         <div key={item.id} className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm flex flex-col">
                             <div className="flex items-start gap-3 mb-4">
                                 <div className="bg-blue-100 p-2 rounded-full mt-1">
                                     <Salad className="w-6 h-6 text-blue-600 flex-shrink-0" />
                                 </div>
-                                <div>
-                                    <p className="font-semibold text-md text-gray-800">{item.name}</p>
-                                    <p className="text-gray-500 font-bold">£{item.price.toFixed(2)}</p>
+                                <div className="flex flex-col">
+                                    <p className="font-semibold text-md text-gray-800 mb-2">{item.name}</p>
+                                    <SpiceRating rating={item.spiceRating || 0} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-2 mb-4 pl-11">
@@ -105,6 +132,11 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
                                 <div className="mb-4 pl-11">
                                     <p className="text-xs text-gray-500"><span className="font-semibold">Allergens:</span> {item.allergens}</p>
                                 </div>
+                            )}
+                            {hasSupplementPrice && (
+                                <p className="text-lg text-gray-800 font-bold mt-3 pl-12">
+                                    +£{parseFloat(item.price).toFixed(2)} each
+                                </p>
                             )}
                             <div className="mt-auto flex flex-col gap-4 pl-11 pr-11">
                                 <hr className="text-gray-100"/>
