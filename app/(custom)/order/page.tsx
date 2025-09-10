@@ -1,4 +1,3 @@
-// app/(custom)/order/page.tsx
 'use client';
 
 import { useEffect, useState } from "react";
@@ -54,9 +53,7 @@ export default function OrderPage() {
         initializeAppInsights();
     }, []);
 
-    useEffect(() => {
-        dispatch(resetOrder());
-    }, [dispatch]);
+    // The problematic useEffect has been removed.
 
     useEffect(() => {
         if (!isLoadingProfile && isRestrictedUser) {
@@ -109,7 +106,8 @@ export default function OrderPage() {
         );
     }
 
-    if(isProfileError) {
+    // Log the error to Application Insights and display a user-friendly message
+    if (isProfileError) {
         if (appInsights) {
             appInsights.trackException({ error: new Error('Failed to load user profile for ordering'), properties: { errorMessage: JSON.stringify(profileError) } });
         }
