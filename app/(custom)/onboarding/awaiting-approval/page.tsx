@@ -28,7 +28,7 @@ const AwaitingApprovalPage: React.FC = () => {
                     <div className="flex flex-col items-center justify-center space-y-4 mt-4">
                         <div className="hidden md:block">
                             <Image
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447469878640"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447568781243"
                                 alt="WhatsApp QR Code"
                                 width={160}
                                 height={160}

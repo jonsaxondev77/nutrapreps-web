@@ -66,7 +66,7 @@ const ContactUsPage = () => {
                         <p className="text-gray-600 mb-4">Scan the QR code to chat with us directly.</p>
                         <div className="w-40 h-40">
                              <Image
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447469878640"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447568781243"
                                 alt="WhatsApp QR Code"
                                 width={160}
                                 height={160}

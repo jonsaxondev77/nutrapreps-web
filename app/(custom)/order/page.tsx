@@ -49,11 +49,8 @@ export default function OrderPage() {
     const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
 
     useEffect(() => {
-        // Initialize Application Insights when the component mounts
         initializeAppInsights();
     }, []);
-
-    // The problematic useEffect has been removed.
 
     useEffect(() => {
         if (!isLoadingProfile && isRestrictedUser) {
