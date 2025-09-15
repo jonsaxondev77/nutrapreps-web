@@ -12,6 +12,7 @@ import { useGetUserProfileQuery } from '@/lib/store/services/authApi';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import OrderingCountdown from "./OrderingCountdown";
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import { useSession } from "next-auth/react";
 
 let appInsights: ApplicationInsights | null = null;
 
@@ -40,6 +41,8 @@ const initializeAppInsights = async () => {
 export default function OrderPage() {
     const [step, setStep] = useState(1);
     const dispatch = useAppDispatch();
+
+    const { data: session, status } = useSession()
 
     // Fetch ordering status and user profile
     const { data: statusData, isLoading: isLoadingStatus, isError: isStatusError } = useGetOrderingStatusQuery();

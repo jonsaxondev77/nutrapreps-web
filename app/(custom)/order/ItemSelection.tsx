@@ -124,9 +124,9 @@ export const ItemSelection = ({ title, itemType, onNext, onBack }: ItemSelection
                             </div>
                             <div className="grid grid-cols-2 gap-2 mb-4 pl-11">
                                 <MacroBadge label="Calories" value={item.calories || 'N/A'} color="text-red-500" icon={Flame} />
-                                <MacroBadge label="Protein" value={`${item.protein || 'N/A'}g`} color="text-green-500" icon={Drumstick} />
-                                <MacroBadge label="Carbs" value={`${item.carbs || 'N/A'}g`} color="text-yellow-500" icon={Wheat} />
-                                <MacroBadge label="Fat" value={`${item.fat || 'N/A'}g`} color="text-blue-500" icon={Beef} />
+                                <MacroBadge label="Protein" value={`${item.protein || 'N/A'}`} color="text-green-500" icon={Drumstick} />
+                                <MacroBadge label="Carbs" value={`${item.carbs || 'N/A'}`} color="text-yellow-500" icon={Wheat} />
+                                <MacroBadge label="Fat" value={`${item.fat || 'N/A'}`} color="text-blue-500" icon={Beef} />
                             </div>
                             {item.allergens && (
                                 <div className="mb-4 pl-11">
