@@ -17,6 +17,15 @@ export interface AuthResponse {
   message: string;
 }
 
+export enum AccountStatus {
+  Registered = 'Registered',
+  EmailVerified = 'EmailVerified',
+  InfoCompleted = 'InfoCompleted',
+  Active = 'Active',
+  Inactive = 'Inactive',
+  Rejected = 'Rejected',
+}
+
 export interface UserProfile {
     firstName: string;
     lastName: string;
@@ -29,6 +38,7 @@ export interface UserProfile {
     routeId: number;
     allergies: string;
     safePlaceDeliveryInstructions: string;
+    accountStatus: AccountStatus;
 }
 
 export type UpdateUserProfileRequest = Partial<UserProfile>;

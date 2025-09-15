@@ -9,10 +9,12 @@ import { useAppDispatch } from "@/lib/store/hooks";
 import { resetOrder } from "@/lib/store/orderSlice";
 import { useGetOrderingStatusQuery } from "@/lib/store/services/settingsApi";
 import { useGetUserProfileQuery } from '@/lib/store/services/authApi';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, Mail, UserCheck } from 'lucide-react';
 import OrderingCountdown from "./OrderingCountdown";
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import { useSession } from "next-auth/react";
+import { FaWhatsapp } from "react-icons/fa";
+import Link from "next/link";
+import Image from 'next/image';
 
 let appInsights: ApplicationInsights | null = null;
 
@@ -42,8 +44,6 @@ export default function OrderPage() {
     const [step, setStep] = useState(1);
     const dispatch = useAppDispatch();
 
-    const { data: session, status } = useSession()
-
     // Fetch ordering status and user profile
     const { data: statusData, isLoading: isLoadingStatus, isError: isStatusError } = useGetOrderingStatusQuery();
     const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError, error: profileError } = useGetUserProfileQuery();
@@ -52,6 +52,7 @@ export default function OrderPage() {
     const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
 
     useEffect(() => {
+        // Initialize Application Insights when the component mounts
         initializeAppInsights();
     }, []);
 
@@ -90,23 +91,84 @@ export default function OrderPage() {
             </div>
         );
     }
+    
 
-    // Display a message for restricted users
-    if (isRestrictedUser) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
-                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
-                    <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                    <h1 className="text-3xl font-bold text-gray-800">Account Not Activated</h1>
-                    <p className="text-gray-600 mt-2 mb-6">
-                        Your account is currently under review and cannot place orders. Please contact support for more information.
-                    </p>
-                </div>
-            </div>
-        );
+    if(userProfile && userProfile.accountStatus !== 'Active') {
+        const status = userProfile.accountStatus;
+        console.log(status);
+        let title = '';
+        let message = '';
+        let icon = <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />;
+        switch(status) {
+            case 'Registered':
+                title = 'Please confirm your email';
+                message = 'You have successfully registered. Please check your inbox and remember to check your spam folder to confirm your email and activate your account.';
+                icon = <Mail className="w-16 h-16 text-blue-500 mx-auto mb-4" />;
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                            {icon}
+                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                            <p className="text-gray-600 mt-2 mb-6">
+                                {message}
+                            </p>
+                        </div>
+                    </div>
+                );  
+            case 'EmailVerified':
+                title = 'Complete Your Profile';
+                message = 'Thank you for verifying your email. To activate your account and start ordering, please complete your profile.';
+                icon = <UserCheck className="w-16 h-16 text-purple-500 mx-auto mb-4" />;
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                            {icon}
+                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                            <p className="text-gray-600 mt-2 mb-6">{message}</p>
+                            <Link href="/onboarding/complete-profile" className="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors">
+                                Complete Profile
+                            </Link>
+                        </div>
+                    </div>
+                );
+            case 'InfoCompleted':
+                title = 'Account Awaiting Approval';
+                message = 'Thank you for completing your profile. One of our team members will review your account and assign you to a route, which will then allow you to place an order.';
+                icon = <UserCheck className="w-16 h-16 text-green-500 mx-auto mb-4" />;
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                            {icon}
+                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                            <p className="text-gray-600 mt-2 mb-6">{message}</p>
+                            <div className="flex flex-col items-center justify-center space-y-4 mt-4">
+                                <div className="hidden md:block">
+                                    <Image
+                                        src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447568781243"
+                                        alt="WhatsApp QR Code"
+                                        width={160}
+                                        height={160}
+                                    />
+                                </div>
+                                <Link
+                                    href="https://wa.me/+447469878640"
+                                    className="inline-flex items-center gap-2 px-6 py-3 border border-transparent rounded-lg shadow-sm text-lg font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none transition-colors duration-200"
+                                >
+                                    <FaWhatsapp size={24} /> Message us on WhatsApp
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                );
+                break;
+            default:
+                title = 'Account Not Activated';
+                message = 'Your account is currently under review and cannot place orders. Please contact support for more information.';
+                break;
+        }     
+        
     }
 
-    // Log the error to Application Insights and display a user-friendly message
     if (isProfileError) {
         if (appInsights) {
             appInsights.trackException({ error: new Error('Failed to load user profile for ordering'), properties: { errorMessage: JSON.stringify(profileError) } });
