@@ -144,8 +144,6 @@ export default function SignIn() {
                     </Link>
                 </div>
             )}
-
-
             <button
               type="submit"
               disabled={isRegisteringUser}
