@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
             });
 
             if(!response.ok) {
-                const errorText = await response.text(); // Await the response.text() call
+                const errorText = await response.text();
                 console.error('Backend returned an error:', errorText);
                 return null;
             }
@@ -48,7 +48,6 @@ export const authOptions: NextAuthOptions = {
         async authorize(credentials) {
             if (credentials?.userData) {
                 try {
-                    // The user data is passed directly from the client after successful verification
                     const user = JSON.parse(credentials.userData);
                     return user;
                 } catch (e) {
@@ -94,10 +93,10 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60 // 24 hours
+    maxAge: 3600
   },
   jwt: {
-    maxAge: 24 * 60 * 60 // 24 hours
+    maxAge: 3600
   },
   callbacks: {
     async jwt({token, user}) {

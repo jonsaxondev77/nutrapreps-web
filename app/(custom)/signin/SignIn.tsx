@@ -43,12 +43,12 @@ export default function SignIn() {
       password,
     });
 
-    console.log(result);
-
+    // Check if the login was successful based on the 'ok' property
     if (result?.ok) {
       const callbackUrl = searchParams.get('callbackUrl');
       router.push(callbackUrl || "/");
     } else {
+      // Set the error message when authentication fails
       setError("Failed to sign in. Please check your credentials.");
     }
   };
