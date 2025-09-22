@@ -94,7 +94,7 @@ export interface Order {
 // --- New Simplified Order for Confirmation ---
 export interface SimpleOrder {
     id: number;
-    totalPrice: number;
+    amountPaid: number;
     customerName: string;
 }
 
