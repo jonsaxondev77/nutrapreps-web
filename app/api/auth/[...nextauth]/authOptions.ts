@@ -24,9 +24,8 @@ export const authOptions: NextAuthOptions = {
             });
 
             if(!response.ok) {
-                const errorText = await response.text();
-                console.error('Backend returned an error:', errorText);
-                return null;
+                const errorData = await response.json();
+                throw new Error(errorData.message);
             }
 
             const userData = await response.json();
@@ -35,6 +34,9 @@ export const authOptions: NextAuthOptions = {
 
         } catch(error) {
             console.error('Authorize: Network error or unexpected issue during authentication:', error);
+            if (error instanceof Error) {
+                throw error;
+            }
             return null;
         }
       }

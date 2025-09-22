@@ -43,13 +43,16 @@ export default function SignIn() {
       password,
     });
 
-    // Check if the login was successful based on the 'ok' property
     if (result?.ok) {
       const callbackUrl = searchParams.get('callbackUrl');
       router.push(callbackUrl || "/");
     } else {
-      // Set the error message when authentication fails
-      setError("Failed to sign in. Please check your credentials.");
+      // Check for a specific error message from the server-side logic
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        setError("Failed to sign in. Please check your credentials.");
+      }
     }
   };
 
