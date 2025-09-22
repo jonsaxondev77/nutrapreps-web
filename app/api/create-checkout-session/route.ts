@@ -7,6 +7,7 @@ import { authOptions } from '../auth/[...nextauth]/authOptions';
 export async function POST(request: Request) {
   try {
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     if (!stripeSecretKey) {
       return NextResponse.json({ error: 'Stripe secret key not configured.' }, { status: 500 });
@@ -20,6 +21,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // NEW: Check ordering status on the backend
+    const orderingStatusResponse = await fetch(`${apiUrl}/settings/ordering-status`, {
+      headers: { 'Authorization': `Bearer ${session.user.jwtToken}` }
+    });
+    const { isOrderingEnabled } = await orderingStatusResponse.json();
+
+    if (!isOrderingEnabled) {
+      return NextResponse.json({ error: 'Ordering is currently disabled.' }, { status: 403 });
+    }
+    
     let baseShippingCost = 0;
     let stripeCustomerId = null;
     try {

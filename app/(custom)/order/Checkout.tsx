@@ -7,9 +7,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { removeItem } from '@/lib/store/cartSlice';
 import { resetOrder } from '@/lib/store/orderSlice';
-import { Lock, ArrowRight, Trash2 } from 'lucide-react';
+import { Lock, ArrowRight, Trash2, AlertCircle } from 'lucide-react';
 import { usePlaceOrderMutation } from '@/lib/store/services/orderingApi';
 import { useGetShippingDetailsQuery } from '@/lib/store/services/authApi';
+import { useGetOrderingStatusQuery } from '@/lib/store/services/settingsApi';
 
 export default function Checkout() {
     const dispatch = useAppDispatch();
@@ -18,6 +19,8 @@ export default function Checkout() {
     const [processing, setProcessing] = useState(false);
     const [placeOrder] = usePlaceOrderMutation();
     const { data: shippingData, isLoading: isLoadingShipping } = useGetShippingDetailsQuery();
+    const { data: statusData, isLoading: isLoadingStatus } = useGetOrderingStatusQuery();
+    const isOrderingEnabled = statusData?.isOrderingEnabled ?? false;
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 
@@ -66,6 +69,8 @@ export default function Checkout() {
         router.push('/order');
     };
 
+    const isCheckoutDisabled = processing || cartItems.length === 0 || !isOrderingEnabled;
+
     return (
         <div className="w-full max-w-5xl mx-auto py-12 px-4">
             <div className="p-8 bg-white shadow-lg rounded-2xl animate-fade-in">
@@ -104,9 +109,15 @@ export default function Checkout() {
                     <div className="flex flex-col items-center justify-center bg-gray-50 p-8 rounded-lg">
                          <h2 className="text-xl font-semibold text-gray-800 mb-4">Ready to Order?</h2>
                          <p className="text-gray-600 text-center mb-6">You will be redirected to our secure payment partner, Stripe, to complete your purchase.</p>
+                         {!isOrderingEnabled && (
+                            <div className="bg-yellow-50 text-yellow-800 p-4 rounded-lg flex items-center gap-2 mb-4">
+                                <AlertCircle size={20}/>
+                                <p className="text-sm">Ordering is currently disabled. Please check back during our ordering window.</p>
+                            </div>
+                         )}
                          <button 
                             onClick={handleCheckout}
-                            disabled={processing || cartItems.length === 0}
+                            disabled={isCheckoutDisabled}
                             className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-green-600 text-white font-bold rounded-lg disabled:bg-gray-400 hover:bg-green-700 transition-colors shadow-sm"
                         >
                             {processing ? 'Redirecting...' : <>
