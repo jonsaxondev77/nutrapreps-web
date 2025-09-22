@@ -47,11 +47,12 @@ export default function SignIn() {
       const callbackUrl = searchParams.get('callbackUrl');
       router.push(callbackUrl || "/");
     } else {
-      // Check for a specific error message from the server-side logic
-      if (result?.error) {
+      if (result?.error === "Invalid credentials.") {
+        setError("We couldn't find an account with that email and password. Please check your details and try again.");
+      } else if (result?.error) {
         setError(result.error);
       } else {
-        setError("Failed to sign in. Please check your credentials.");
+        setError("An unexpected error occurred. Please try again.");
       }
     }
   };
