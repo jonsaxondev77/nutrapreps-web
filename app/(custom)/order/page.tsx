@@ -49,7 +49,9 @@ export default function OrderPage() {
     const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError, error: profileError } = useGetUserProfileQuery();
 
     // Check if the user is restricted from ordering
-    const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12;
+    const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12 || userProfile?.routeId === 13;
+
+    console.log(isRestrictedUser);
 
     useEffect(() => {
         // Initialize Application Insights when the component mounts
@@ -91,11 +93,26 @@ export default function OrderPage() {
             </div>
         );
     }
-    
 
-    if(userProfile && userProfile.accountStatus !== 'Active') {
+    console.log(userProfile);
+    
+    if(isRestrictedUser) {
+
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                    <h1 className="text-3xl font-bold text-gray-800">Out of Delivery Area</h1>
+                    <p className="text-gray-600 mt-2 mb-6">
+                       Your address is not within our delivery area at this time, please check back as we constantly review our delivery areas.
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
+    if(userProfile && userProfile.accountStatus !== 'Active' && !isRestrictedUser) {
+
         const status = userProfile.accountStatus;
-        console.log(status);
         let title = '';
         let message = '';
         let icon = <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />;
