@@ -44,17 +44,12 @@ export default function OrderPage() {
     const [step, setStep] = useState(1);
     const dispatch = useAppDispatch();
 
-    // Fetch ordering status and user profile
     const { data: statusData, isLoading: isLoadingStatus, isError: isStatusError } = useGetOrderingStatusQuery();
     const { data: userProfile, isLoading: isLoadingProfile, isError: isProfileError, error: profileError } = useGetUserProfileQuery();
 
-    // Check if the user is restricted from ordering
     const isRestrictedUser = userProfile?.routeId === 10 || userProfile?.routeId === 12 || userProfile?.routeId === 13;
 
-    console.log(isRestrictedUser);
-
     useEffect(() => {
-        // Initialize Application Insights when the component mounts
         initializeAppInsights();
     }, []);
 
@@ -71,7 +66,6 @@ export default function OrderPage() {
                     }
                 });
             } else {
-                // You might want to retry after a short delay or log this
                 console.warn("Application Insights not yet initialized. Skipping event tracking.");
             }
         }
@@ -93,99 +87,7 @@ export default function OrderPage() {
             </div>
         );
     }
-
-    console.log(userProfile);
     
-    if(isRestrictedUser) {
-
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
-                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
-                    <h1 className="text-3xl font-bold text-gray-800">Out of Delivery Area</h1>
-                    <p className="text-gray-600 mt-2 mb-6">
-                       Your address is not within our delivery area at this time, please check back as we constantly review our delivery areas.
-                    </p>
-                </div>
-            </div>
-        )
-    }
-
-    if(userProfile && userProfile.accountStatus !== 'Active' && !isRestrictedUser) {
-
-        const status = userProfile.accountStatus;
-        let title = '';
-        let message = '';
-        let icon = <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />;
-        switch(status) {
-            case 'Registered':
-                title = 'Please confirm your email';
-                message = 'You have successfully registered. Please check your inbox and remember to check your spam folder to confirm your email and activate your account.';
-                icon = <Mail className="w-16 h-16 text-blue-500 mx-auto mb-4" />;
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
-                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
-                            {icon}
-                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
-                            <p className="text-gray-600 mt-2 mb-6">
-                                {message}
-                            </p>
-                        </div>
-                    </div>
-                );  
-            case 'EmailVerified':
-                title = 'Complete Your Profile';
-                message = 'Thank you for verifying your email. To activate your account and start ordering, please complete your profile.';
-                icon = <UserCheck className="w-16 h-16 text-purple-500 mx-auto mb-4" />;
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
-                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
-                            {icon}
-                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
-                            <p className="text-gray-600 mt-2 mb-6">{message}</p>
-                            <Link href="/onboarding/complete-profile" className="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors">
-                                Complete Profile
-                            </Link>
-                        </div>
-                    </div>
-                );
-            case 'InfoCompleted':
-                title = 'Account Awaiting Approval';
-                message = 'Thank you for completing your profile. One of our team members will review your account and assign you to a route, which will then allow you to place an order.';
-                icon = <UserCheck className="w-16 h-16 text-green-500 mx-auto mb-4" />;
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
-                        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
-                            {icon}
-                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
-                            <p className="text-gray-600 mt-2 mb-6">{message}</p>
-                            <div className="flex flex-col items-center justify-center space-y-4 mt-4">
-                                <div className="hidden md:block">
-                                    <Image
-                                        src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447568781243"
-                                        alt="WhatsApp QR Code"
-                                        width={160}
-                                        height={160}
-                                    />
-                                </div>
-                                <Link
-                                    href="https://wa.me/+447469878640"
-                                    className="inline-flex items-center gap-2 px-6 py-3 border border-transparent rounded-lg shadow-sm text-lg font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none transition-colors duration-200"
-                                >
-                                    <FaWhatsapp size={24} /> Message us on WhatsApp
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                );
-                break;
-            default:
-                title = 'Account Not Activated';
-                message = 'Your account is currently under review and cannot place orders. Please contact support for more information.';
-                break;
-        }     
-        
-    }
-
     if (isProfileError) {
         if (appInsights) {
             appInsights.trackException({ error: new Error('Failed to load user profile for ordering'), properties: { errorMessage: JSON.stringify(profileError) } });
@@ -197,6 +99,95 @@ export default function OrderPage() {
                     <h1 className="text-3xl font-bold text-gray-800">Error Loading Profile</h1>
                     <p className="text-gray-600 mt-2 mb-6">
                         We couldn't load your profile details. Please try refreshing the page or contact support if the problem persists.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+    
+    // Main access control logic starts here.
+    if (userProfile && userProfile.accountStatus !== 'Active') {
+        const status = userProfile.accountStatus;
+        let title = '';
+        let message = '';
+        let icon = <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />;
+
+        switch (status) {
+            case 'Registered':
+                title = 'Please confirm your email';
+                message = 'You have successfully registered. Please check your inbox and remember to check your spam folder to confirm your email and activate your account.';
+                icon = <Mail className="w-16 h-16 text-blue-500 mx-auto mb-4" />;
+                break;
+            case 'EmailVerified':
+                title = 'Complete Your Profile';
+                message = 'Thank you for verifying your email. To activate your account and start ordering, please complete your profile.';
+                icon = <UserCheck className="w-16 h-16 text-purple-500 mx-auto mb-4" />;
+                break;
+            case 'InfoCompleted':
+                title = 'Account Awaiting Approval';
+                message = 'Thank you for completing your profile. One of our team members will review your account and assign you to a route, which will then allow you to place an order.';
+                icon = <UserCheck className="w-16 h-16 text-green-500 mx-auto mb-4" />;
+                break;
+            default:
+                title = 'Account Not Activated';
+                message = 'Your account is currently under review and cannot place orders. Please contact support for more information.';
+                break;
+        }
+
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                    {icon}
+                    <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                    <p className="text-gray-600 mt-2 mb-6">
+                        {message}
+                    </p>
+                    {status === 'EmailVerified' && (
+                        <Link href="/onboarding/complete-profile" className="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors">
+                            Complete Profile
+                        </Link>
+                    )}
+                    {status === 'InfoCompleted' && (
+                        <div className="flex flex-col items-center justify-center space-y-4 mt-4">
+                            <div className="hidden md:block">
+                                <Image
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447568781243"
+                                    alt="WhatsApp QR Code"
+                                    width={160}
+                                    height={160}
+                                />
+                            </div>
+                            <Link
+                                href="https://wa.me/+447469878640"
+                                className="inline-flex items-center gap-2 px-6 py-3 border border-transparent rounded-lg shadow-sm text-lg font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none transition-colors duration-200"
+                            >
+                                <FaWhatsapp size={24} /> Message us on WhatsApp
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+    
+    // Fallback: If accountStatus is 'Active', check for specific route restrictions.
+    if (userProfile?.routeId === 10 || userProfile?.routeId === 12 || userProfile?.routeId === 13) {
+        let title = 'Access Denied';
+        let message = 'You cannot place an order at this time. Please contact support for more information.';
+        let icon = <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />;
+        
+        if (userProfile.routeId === 12) {
+            title = 'Out of Delivery Area';
+            message = 'Your address is not within our delivery area at this time. Please check back as we constantly review our delivery areas.';
+        }
+
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-xl w-full">
+                    {icon}
+                    <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                    <p className="text-gray-600 mt-2 mb-6">
+                        {message}
                     </p>
                 </div>
             </div>
