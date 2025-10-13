@@ -149,9 +149,12 @@ export default function OrderPage() {
                     )}
                     {status === 'InfoCompleted' && (
                         <div className="flex flex-col items-center justify-center space-y-4 mt-4">
+                            <p className="text-sm text-gray-700 mb-2 font-semibold">
+                                Please message us on WhatsApp so we can discuss any allergens before we can activate your account.
+                            </p>
                             <div className="hidden md:block">
                                 <Image
-                                    src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447568781243"
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/+447469878640"
                                     alt="WhatsApp QR Code"
                                     width={160}
                                     height={160}
