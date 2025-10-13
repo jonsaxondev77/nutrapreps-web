@@ -125,7 +125,7 @@ export default function OrderPage() {
                 break;
             case 'InfoCompleted':
                 title = 'Account Awaiting Approval';
-                message = 'Thank you for completing your profile. One of our team members will review your account and assign you to a route, which will then allow you to place an order.';
+                message = 'Thank you for completing your profile. To activate your account, you must contact us on WhatsApp to discuss any allergens you may have.';
                 icon = <UserCheck className="w-16 h-16 text-green-500 mx-auto mb-4" />;
                 break;
             default:
