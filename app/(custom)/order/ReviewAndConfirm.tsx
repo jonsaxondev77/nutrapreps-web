@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/cartSlice";
+import { getStartOfWeekDate, formatOrderWeek } from '@/lib/store/services/orderingApi';
 import { Package, ChefHat, Salad, Cookie, ShoppingCart, CheckCircle } from 'lucide-react';
 
 interface Props {
@@ -15,6 +16,9 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
     const dispatch = useAppDispatch();
     const order = useAppSelector((state) => state.order);
     const [isAdded, setIsAdded] = useState(false);
+    
+    // Calculate the order week
+    const orderWeek = formatOrderWeek(getStartOfWeekDate()); // <-- Use the utilities
 
     if (!order.plan) {
         return <p className="text-center p-8">Your box configuration is empty. Please go back and select a plan.</p>;
@@ -79,6 +83,10 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
             <div className="p-8 bg-white shadow-lg rounded-2xl animate-fade-in">
                 <div className="text-center mb-10">
                     <h1 className="text-3xl font-bold text-gray-800">Review Your Custom Box</h1>
+                    {/* --- Display Order Week Here --- */}
+                    <p className="text-xl font-semibold text-green-600 mt-2 mb-2">
+                        {orderWeek}
+                    </p>
                     <p className="text-gray-500 mt-2">Almost there! Please confirm your selections below.</p>
                 </div>
 

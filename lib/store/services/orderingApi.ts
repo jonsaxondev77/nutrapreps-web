@@ -1,3 +1,5 @@
+// jonsaxondev77/nutrapreps-web/nutrapreps-web-fecb3eb92c03118736e03ff3755198c8c330dc4e/lib/store/services/orderingApi.ts
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { Extra, MealOption, Order, OrderHistoryItem, SimpleOrder } from '@/types/ordering';
 import { CartItem } from '../cartSlice';
@@ -5,14 +7,33 @@ import { PagedResponse } from '@/types/shared';
 import { baseQuery, baseQueryWithRedirect } from './baseQuery';
 
 
-const getNextSunday = () => {
+// Utility to get the start of the current order cycle (next Sunday) as a Date object.
+export const getStartOfWeekDate = (): Date => {
   const date = new Date();
-  const today = date.getDay();
-  const daysUntilSunday = 7 - today;
+  const today = date.getDay(); // 0 is Sunday
+  
+  // Calculate days to add to reach the next Sunday.
+  // Original logic was implicit, this uses explicit logic to find the next Sunday.
+  const daysUntilSunday = today === 0 ? 7 : 7 - today;
+  
   date.setDate(date.getDate() + daysUntilSunday);
   date.setHours(0, 0, 0, 0);
-  return date.toISOString();
+  return date;
 };
+
+// Utility to get the ISO string for the backend API (replaces old local function)
+export const getStartOfWeekISO = (): string => {
+    return getStartOfWeekDate().toISOString();
+};
+
+export const formatOrderWeek = (date: Date): string => {
+    // Includes weekday, month, and day for maximum clarity
+    const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+    // New message format
+    return `Your delivery week starts ${date.toLocaleDateString('en-US', options)}`;
+};
+
+
 
 export const orderingApi = createApi({
   reducerPath: 'mealApi',
@@ -41,7 +62,7 @@ export const orderingApi = createApi({
       query: (cartItems) => {
         // --- Data Transformation Logic ---
         const orderData = {
-          Weekstart: getNextSunday(),
+          Weekstart: getStartOfWeekISO(),
           OrderItems: cartItems.map(item => {
             const sundayMeals = item.meals.sunday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Sunday', quantity: 1 }));
             const wednesdayMeals = item.meals.wednesday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Wednesday', quantity: 1 }));

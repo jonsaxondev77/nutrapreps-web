@@ -4,6 +4,7 @@ import { DeliveryDay, Package } from '@/types/ordering';
 import { setPlan, setDeliveryDays } from '@/lib/store/orderSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { useGetPackagesQuery } from '@/lib/store/services/packagesApi';
+import { getStartOfWeekDate, formatOrderWeek } from '@/lib/store/services/orderingApi';
 import { Calendar, Users, Zap, Leaf, PackageIcon } from 'lucide-react';
 
 // --- Helper Data for Plan Cards ---
@@ -36,6 +37,9 @@ export const PlanAndDelivery = ({ onNext }: Props) => {
   };
 
   const isReady = plan && deliveryDays;
+  
+  // Calculate the order week
+  const orderWeek = formatOrderWeek(getStartOfWeekDate()); // <-- Use the utilities
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -50,6 +54,10 @@ export const PlanAndDelivery = ({ onNext }: Props) => {
       <div className="p-8 bg-white shadow-lg rounded-2xl animate-fade-in">
         <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-gray-800">Let&apos;s Build Your Perfect Box</h1>
+            {/* --- Display Order Week Here --- */}
+            <p className="text-xl font-semibold text-green-600 mt-2 mb-2">
+              {orderWeek}
+            </p>
             <p className="text-gray-500 mt-2">Start by picking a plan that fits your lifestyle.</p>
         </div>
 

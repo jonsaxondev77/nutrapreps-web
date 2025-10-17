@@ -1,9 +1,11 @@
+// jonsaxondev77/nutrapreps-web/nutrapreps-web-fecb3eb92c03118736e03ff3755198c8c330dc4e/app/(custom)/order/OrderConfirmation.tsx
+
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { useGetOrderBySessionIdQuery } from '@/lib/store/services/orderingApi';
+import { useGetOrderBySessionIdQuery, getStartOfWeekDate, formatOrderWeek } from '@/lib/store/services/orderingApi';
 import { useAppDispatch } from '@/lib/store/hooks';
 import { clearCart } from '@/lib/store/cartSlice';
 import { CheckCircle, Loader2 } from 'lucide-react';
@@ -13,6 +15,9 @@ export default function OrderConfirmation() {
     const searchParams = useSearchParams();
     const dispatch = useAppDispatch();
     const sessionId = searchParams.get('session_id');
+
+    // Calculate the order week
+    const orderWeek = formatOrderWeek(getStartOfWeekDate()); //
 
     const { data: order, error, isLoading } = useGetOrderBySessionIdQuery(sessionId!, {
         skip: !sessionId,
@@ -56,6 +61,8 @@ export default function OrderConfirmation() {
                 
                 <div className="mt-10 pt-6 border-t text-center">
                      <p className="text-2xl font-bold">Total Paid: £{order.amountPaid.toFixed(2)}</p>
+                     {/* Added the order week here */}
+                     <p className="text-xl font-semibold text-green-600 mt-4 mb-2">{orderWeek}</p>
                      <p className="text-gray-500 mt-2">To view your order you can use the Go to My Account Button Below.</p>
                 </div>
 
