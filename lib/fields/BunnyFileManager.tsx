@@ -75,7 +75,7 @@ export const BunnyFileManager: React.FC<BunnyFileManagerProps> = ({ onFileSelect
 
       fetchFiles(newPath);
     } else {
-      const imageUrl = `https://${process.env.NEXT_PUBLIC_BUNNY_CDN_PULL_ZONE_HOSTNAME}${file.Path}${file.ObjectName}`;
+      const imageUrl = `https://nutrapreps.b-cdn.net/${file.Path}${file.ObjectName}`;
       
       onFileSelect(imageUrl);
     }
