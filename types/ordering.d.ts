@@ -2,7 +2,7 @@
 
 // --- Core Data Models ---
 
-export type DeliveryDay = 'Sunday' | 'Wednesday' | 'Both';
+export type DeliveryDay = 'Sunday' | "Monday" | 'Wednesday' | 'Thursday' | 'Both';
 
 export interface Package {
     id: number;
