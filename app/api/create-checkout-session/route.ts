@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // NEW: Check ordering status on the backend
+    // Check ordering status on the backend
     const orderingStatusResponse = await fetch(`${apiUrl}/settings/ordering-status`, {
       headers: { 'Authorization': `Bearer ${session.user.jwtToken}` }
     });
@@ -45,7 +45,6 @@ export async function POST(request: Request) {
       console.error("Could not fetch shipping details:", e);
     }
 
-
     try {
       const customerResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/stripe-customer`, {
         headers: {
@@ -59,8 +58,9 @@ export async function POST(request: Request) {
         console.error(`Failed to fetch Stripe Customer ID from backend. Status: ${customerResponse.status}`);
       }
     } catch (e) {
-      console.error("Erro fecthing Stripe Customer ID:", e);
+      console.error("Error fetching Stripe Customer ID:", e);
     }
+    
     const { cartItems, orderId } = await request.json();
 
     if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
@@ -70,6 +70,7 @@ export async function POST(request: Request) {
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
     cartItems.forEach((item: CartItem) => {
+      // 1. Add Plan Line Item
       if (item.plan && typeof item.plan.price === 'number') {
         line_items.push({
           price_data: {
@@ -84,9 +85,11 @@ export async function POST(request: Request) {
         });
       }
 
-      // NEW: Add a line item for each meal with a supplement
+      // 2. Add Meal Supplements and NEW: Double Protein Surcharges
       const allMeals = [...item.meals.sunday, ...item.meals.wednesday].filter(Boolean);
+      
       allMeals.forEach(mealOption => {
+        // Base Supplement
         const supplementPrice = parseFloat(mealOption!.meal.supplement);
         if (supplementPrice > 0) {
             line_items.push({
@@ -101,8 +104,24 @@ export async function POST(request: Request) {
                 quantity: 1,
             });
         }
+
+        // NEW: Double Protein surcharge for this specific meal choice
+        if (mealOption!.hasDoubleProtein) {
+          line_items.push({
+            price_data: {
+              currency: 'gbp',
+              product_data: {
+                name: `Double Protein Upgrade: ${mealOption!.meal.name}`,
+                description: 'Additional serving of protein',
+              },
+              unit_amount: 200, // £2.00 in pence
+            },
+            quantity: 1,
+          });
+        }
       });
 
+      // 3. Add-ons
       const allAddons = [...(item.addons.sunday || []), ...(item.addons.wednesday || [])];
       allAddons.forEach(addon => {
         if (addon.quantity > 0 && addon.item && typeof addon.item.price === 'number') {
@@ -117,6 +136,7 @@ export async function POST(request: Request) {
         }
       });
 
+      // 4. Desserts
       (item.desserts || []).forEach(dessert => {
         if (dessert.quantity > 0 && dessert.item && typeof dessert.item.price === 'number') {
           line_items.push({

@@ -1,6 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Package, DeliveryDay, MealOption, OrderItem } from '@/types/ordering';
 
+/**
+ * Extends the base MealOption to include the user's selection 
+ * for the Double Protein add-on.
+ */
+export interface SelectedMeal extends MealOption {
+  hasDoubleProtein: boolean;
+}
+
 // Define the shape for items that have a quantity
 interface QuantifiedOrderItem {
     item: OrderItem;
@@ -11,8 +19,9 @@ export interface OrderState {
   plan: Package | null;
   deliveryDays: DeliveryDay | null;
   meals: {
-    sunday: (MealOption | null)[];
-    wednesday: (MealOption | null)[];
+    // Stores the selected meal choice along with the double protein toggle state
+    sunday: (SelectedMeal | null)[];
+    wednesday: (SelectedMeal | null)[];
   };
   addons: {
     sunday: QuantifiedOrderItem[];
@@ -54,7 +63,6 @@ const initializeMeals = (state: OrderState) => {
     state.meals.wednesday = Array(wednesdayMealsNeeded).fill(null);
 };
 
-
 const orderSlice = createSlice({
   name: 'order',
   initialState,
@@ -75,10 +83,22 @@ const orderSlice = createSlice({
       
       initializeMeals(state);
     },
-    selectMeal(state, action: PayloadAction<{ day: 'sunday' | 'wednesday', index: number, option: MealOption }>) {
-      const { day, index, option } = action.payload;
+    /**
+     * Updates the selected meal for a specific delivery slot.
+     * Now accepts hasDoubleProtein to capture the choice made in the modal before selection.
+     */
+    selectMeal(state, action: PayloadAction<{ 
+      day: 'sunday' | 'wednesday', 
+      index: number, 
+      option: MealOption, 
+      hasDoubleProtein: boolean 
+    }>) {
+      const { day, index, option, hasDoubleProtein } = action.payload;
       if (state.meals[day] && state.meals[day].length > index) {
-        state.meals[day][index] = option;
+        state.meals[day][index] = {
+          ...option,
+          hasDoubleProtein
+        };
       }
     },
     updateAddonQuantity(state, action: PayloadAction<{ item: OrderItem, quantity: number, day: 'sunday' | 'wednesday' }>) {

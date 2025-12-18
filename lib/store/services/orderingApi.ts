@@ -60,15 +60,15 @@ export const orderingApi = createApi({
     }),
     placeOrder: builder.mutation<{ orderId: number }, CartItem[]>({
       query: (cartItems) => {
-        // --- Data Transformation Logic ---
+        console.log(cartItems);
         const orderData = {
           Weekstart: getStartOfWeekISO(),
           OrderItems: cartItems.map(item => {
-            const sundayMeals = item.meals.sunday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Sunday', quantity: 1 }));
-            const wednesdayMeals = item.meals.wednesday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Wednesday', quantity: 1 }));
+            const sundayMeals = item.meals.sunday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Sunday', quantity: 1, hasDoubleProtein: !!meal!.hasDoubleProtein }));
+            const wednesdayMeals = item.meals.wednesday.filter(Boolean).map(meal => ({ mealOptionId: meal!.id, day: 'Wednesday', quantity: 1, hasDoubleProtein: !!meal!.hasDoubleProtein }));
 
-            const sundayAddons = item.addons.sunday.map(addon => ({ mealOptionId: addon.item.id, day: 'Sunday', quantity: addon.quantity }));
-            const wednesdayAddons = item.addons.wednesday.map(addon => ({ mealOptionId: addon.item.id, day: 'Wednesday', quantity: addon.quantity }));
+            const sundayAddons = item.addons.sunday.map(addon => ({ mealOptionId: addon.item.id, day: 'Sunday', quantity: addon.quantity, hasDoubleProtein: false }));
+            const wednesdayAddons = item.addons.wednesday.map(addon => ({ mealOptionId: addon.item.id, day: 'Wednesday', quantity: addon.quantity, hasDoubleProtein: false }));
 
             return {
               planId: item.plan!.id,

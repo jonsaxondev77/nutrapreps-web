@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addItem } from "@/lib/store/cartSlice";
 import { getStartOfWeekDate, formatOrderWeek } from '@/lib/store/services/orderingApi';
-import { Package, ChefHat, Salad, Cookie, ShoppingCart, CheckCircle } from 'lucide-react';
+import { Package, ChefHat, Salad, Cookie, ShoppingCart, CheckCircle, Flame } from 'lucide-react';
 
 interface Props {
   onEdit: () => void;
@@ -18,16 +18,23 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
     const [isAdded, setIsAdded] = useState(false);
     
     // Calculate the order week
-    const orderWeek = formatOrderWeek(getStartOfWeekDate()); // <-- Use the utilities
+    const orderWeek = formatOrderWeek(getStartOfWeekDate());
 
     if (!order.plan) {
         return <p className="text-center p-8">Your box configuration is empty. Please go back and select a plan.</p>;
     }
 
-    // Calculate supplements total by iterating through selected meals
-    const supplementsTotal = [...order.meals.sunday, ...order.meals.wednesday]
-        .filter(Boolean)
+    // Get all valid selected meals
+    const allMeals = [...order.meals.sunday, ...order.meals.wednesday].filter(Boolean);
+
+    // Calculate base meal supplements
+    const supplementsTotal = allMeals
         .reduce((total, mealOption) => total + parseFloat(mealOption!.meal.supplement), 0);
+
+    // --- NEW: Double Protein Logic ---
+    // Filter for meals where double protein was selected and multiply by £2.00
+    const doubleProteinCount = allMeals.filter(m => m?.hasDoubleProtein).length;
+    const doubleProteinTotal = doubleProteinCount * 2.00;
 
     const addonsTotal = [...order.addons.sunday, ...order.addons.wednesday]
         .reduce((total, addon) => total + addon.item.price * addon.quantity, 0);
@@ -35,14 +42,13 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
     const dessertsTotal = order.desserts
         .reduce((total, dessert) => total + dessert.item.price * dessert.quantity, 0);
         
-    const grandTotal = order.plan.price + supplementsTotal + addonsTotal + dessertsTotal;
+    // Update grand total to include the new doubleProteinTotal surcharge
+    const grandTotal = order.plan.price + supplementsTotal + doubleProteinTotal + addonsTotal + dessertsTotal;
 
     const handleAddToCart = () => {
         dispatch(addItem({ order, totalPrice: grandTotal }));
         setIsAdded(true);
     };
-
-    const allMeals = [...order.meals.sunday, ...order.meals.wednesday].filter(Boolean);
 
     if (isAdded) {
         return (
@@ -83,7 +89,6 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
             <div className="p-8 bg-white shadow-lg rounded-2xl animate-fade-in">
                 <div className="text-center mb-10">
                     <h1 className="text-3xl font-bold text-gray-800">Review Your Custom Box</h1>
-                    {/* --- Display Order Week Here --- */}
                     <p className="text-xl font-semibold text-green-600 mt-2 mb-2">
                         {orderWeek}
                     </p>
@@ -107,12 +112,21 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                             <ChefHat className="w-6 h-6 text-green-600"/>
                             <h3 className="font-bold text-xl">Selected Meals ({allMeals.length})</h3>
                         </div>
-                        <ul className="list-disc list-inside space-y-1 text-gray-700 pl-9">
-                            {allMeals.map((option, i) => <li key={i}>{option!.meal.name}</li>)}
+                        <ul className="space-y-2 text-gray-700 pl-9">
+                            {allMeals.map((option, i) => (
+                                <li key={i} className="flex items-center justify-between border-b border-gray-100 last:border-0 pb-1">
+                                    <span>{option!.meal.name}</span>
+                                    {option!.hasDoubleProtein && (
+                                        <span className="flex items-center gap-1 text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase tracking-tight">
+                                            <Flame size={12} /> Double Protein
+                                        </span>
+                                    )}
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Add-ons Section */}
+                    {/* Add-ons and Desserts (Unchanged) */}
                     {(order.addons.sunday.length > 0 || order.addons.wednesday.length > 0) && (
                         <div className="p-4 bg-gray-50 rounded-lg border">
                             <div className="flex items-center gap-3 mb-2">
@@ -144,7 +158,6 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                         </div>
                     )}
 
-                    {/* Desserts Section */}
                     {order.desserts.length > 0 && (
                          <div className="p-4 bg-gray-50 rounded-lg border">
                             <div className="flex items-center gap-3 mb-2">
@@ -165,9 +178,19 @@ export const ReviewAndConfirm = ({ onEdit, onRestart }: Props) => {
                     <div className="space-y-2 text-lg">
                         <div className="flex justify-between"><span>Plan: {order.plan.name}</span> <span>£{order.plan.price.toFixed(2)}</span></div>
                         {supplementsTotal > 0 && <div className="flex justify-between text-gray-600"><span>Meal Supplements</span> <span>£{supplementsTotal.toFixed(2)}</span></div>}
+                        
+                        {/* --- NEW: Double Protein Summary Row --- */}
+                        {doubleProteinTotal > 0 && (
+                            <div className="flex justify-between text-blue-600 font-medium italic">
+                                <span>Double Protein (x{doubleProteinCount})</span> 
+                                <span>+£{doubleProteinTotal.toFixed(2)}</span>
+                            </div>
+                        )}
+
                         {addonsTotal > 0 && <div className="flex justify-between text-gray-600"><span>Add-ons</span> <span>£{addonsTotal.toFixed(2)}</span></div>}
                         {dessertsTotal > 0 && <div className="flex justify-between text-gray-600"><span>Desserts</span> <span>£{dessertsTotal.toFixed(2)}</span></div>}
-                        <div className="flex justify-between font-bold text-2xl border-t pt-2 mt-2">
+                        
+                        <div className="flex justify-between font-bold text-2xl border-t pt-2 mt-2 text-gray-800">
                             <span>Total for this box</span>
                             <span>£{grandTotal.toFixed(2)}</span>
                         </div>

@@ -21,6 +21,10 @@ export interface Meal {
     carbs: string;
     protein: string;
     calories: string;
+    doubleFat: string;
+    doubleCarbs: string;
+    doubleProtein: string;
+    doubleCalories: string;
     allergies: string;
     supplement: string;
     spiceRating: number;
@@ -32,6 +36,8 @@ export interface MealOption {
     isAddon: boolean;
     mealId: number;
     meal: Meal;
+    allowedDoubleProtein: boolean;
+    hasDoubleProtein: boolean;
 }
 
 export interface Extra {
