@@ -60,7 +60,7 @@ export default function OrderConfirmation() {
                 </div>
                 
                 <div className="mt-10 pt-6 border-t text-center">
-                     <p className="text-2xl font-bold">Total Paid: £{order.amountPaid.toFixed(2)}</p>
+                     {/*<p className="text-2xl font-bold">Total Paid: £{order.amountPaid.toFixed(2)}</p>*/}
                      {/* Added the order week here */}
                      <p className="text-xl font-semibold text-green-600 mt-4 mb-2">{orderWeek}</p>
                      <p className="text-gray-500 mt-2">To view your order you can use the Go to My Account Button Below.</p>

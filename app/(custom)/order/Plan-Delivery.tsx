@@ -148,10 +148,13 @@ export const PlanAndDelivery = ({ onNext }: Props) => {
       <div className="p-8 bg-white shadow-lg rounded-2xl animate-fade-in">
         <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-gray-800">Let&apos;s Build Your Perfect Box</h1>
-            {/* --- Display Order Week Here --- */}
-            <p className="text-xl font-semibold text-green-600 mt-2 mb-2">
-              {orderWeek}
-            </p>
+            {
+              /* --- Display Order Week Here --- 
+              <p className="text-xl font-semibold text-green-600 mt-2 mb-2">
+                {orderWeek}
+              </p>
+              */
+            }
              {/* Display schedule warning if on alternate route */}
             {isAlternateSchedule && (
                  <p className="text-sm text-red-500 font-medium">Note: Your route schedule is **Monday & Thursday** delivery.</p>
